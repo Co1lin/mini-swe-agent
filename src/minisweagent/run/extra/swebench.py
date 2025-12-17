@@ -195,8 +195,9 @@ def main(
     split: str = typer.Option("dev", "--split", help="Dataset split", rich_help_panel="Data selection"),
     slice_spec: str = typer.Option("", "--slice", help="Slice specification (e.g., '0:5' for first 5 instances)", rich_help_panel="Data selection"),
     filter_spec: str = typer.Option("", "--filter", help="Filter instance IDs by regex", rich_help_panel="Data selection"),
+    instance_ids_paths: list[Path] = typer.Option([], "--instance-ids-paths", help="Paths to json files containing instance IDs to run", rich_help_panel="Data selection"),
     shuffle: bool = typer.Option(False, "--shuffle", help="Shuffle instances", rich_help_panel="Data selection"),
-    output: str = typer.Option("", "-o", "--output", help="Output directory", rich_help_panel="Basic"),
+    output: str = typer.Option("output", "-o", "--output", help="Output directory", rich_help_panel="Basic"),
     workers: int = typer.Option(1, "-w", "--workers", help="Number of worker threads for parallel processing", rich_help_panel="Basic"),
     model: str | None = typer.Option(None, "-m", "--model", help="Model to use", rich_help_panel="Basic"),
     model_class: str | None = typer.Option(None, "-c", "--model-class", help="Model class to use (e.g., 'anthropic' or 'minisweagent.models.anthropic.AnthropicModel')", rich_help_panel="Advanced"),
@@ -213,6 +214,13 @@ def main(
     dataset_path = DATASET_MAPPING.get(subset, subset)
     logger.info(f"Loading dataset {dataset_path}, split {split}...")
     instances = list(load_dataset(dataset_path, split=split))
+
+    if instance_ids_paths:
+        instance_ids = set()
+        for instance_ids_path in instance_ids_paths:
+            instance_ids.update(json.loads(Path(instance_ids_path).read_text()))
+        instances = list(filter(lambda x: x["instance_id"] in instance_ids, instances))
+    logger.info(f'Selected: {len(instances) = }')
 
     instances = filter_instances(instances, filter_spec=filter_spec, slice_spec=slice_spec, shuffle=shuffle)
     if not redo_existing and (output_path / "preds.json").exists():

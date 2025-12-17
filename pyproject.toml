@@ -66,6 +66,10 @@ dev = [
     "mkdocs-glightbox",
     "mkdocs-redirects",
     "portkey-ai",
+    "ipython",
+    "google-cloud-aiplatform",
+    "vertexai",
+    "sb-cli",
 ]
 
 [project.urls]
