@@ -226,10 +226,10 @@ environment:
 
 model:
   model_name: openai/Qwen/Qwen3-Coder-30B-A3B-Instruct
-  # model_name: openai/django_ar_code_classic_all_r64_qwen3coder30i_12k_2ep_cos_1216_ckpt365
+  # model_name: openai/django_ar_code_classic_all_r64_qwen3coder30i_12k_2ep_cos_1217_ckpt365
   model_kwargs:
-    # api_base: http://93.91.156.83:53331/v1
-    api_base: http://93.91.156.83:52951/v1
+    api_base: http://93.91.156.83:52951/v1 # 8001
+    # api_base: http://93.91.156.83:46171/v1 # 8002
     api_key: colin
     # temperature: 0.0
     temperature: 0.7

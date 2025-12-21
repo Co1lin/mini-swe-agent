@@ -72,6 +72,8 @@ dev = [
     "sb-cli",
     "p_tqdm",
     "docker",
+    "fire",
+    "loguru",
 ]
 
 [project.urls]
