@@ -74,6 +74,7 @@ dev = [
     "docker",
     "fire",
     "loguru",
+    "swebench @ git+https://github.com/SWE-bench/SWE-bench.git",
 ]
 
 [project.urls]

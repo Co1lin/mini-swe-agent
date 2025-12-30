@@ -44,6 +44,8 @@ DATASET_MAPPING = {
     "multilingual": "swe-bench/SWE-Bench_Multilingual",
     "smith": "SWE-bench/SWE-smith",
     "_test": "klieret/swe-bench-dummy-test-dataset",
+    "issue_gen_django_e13b71": "/mnt/data_shared/code/repotune/data/issue_gen/django_20241227_8d9901c/sb_instances.jsonl",
+    "issue_gen_git_django_e13b71": "/mnt/data_shared/code/repotune/data/issue_gen_git/django_20241227_8d9901c/sb_instances.jsonl",
 }
 
 
@@ -213,7 +215,10 @@ def main(
 
     dataset_path = DATASET_MAPPING.get(subset, subset)
     logger.info(f"Loading dataset {dataset_path}, split {split}...")
-    instances = list(load_dataset(dataset_path, split=split))
+    if dataset_path.endswith(".jsonl"):
+        instances = list(load_dataset('json', data_files=dataset_path, split='train'))
+    else:
+        instances = list(load_dataset(dataset_path, split=split))
 
     if instance_ids_paths:
         instance_ids = set()
@@ -272,3 +277,11 @@ def main(
 
 if __name__ == "__main__":
     app()
+
+
+'''
+uv run mini-extra swebench -c my_sbv.yaml --subset verified --split test --workers 12 --instance-ids-paths /mnt/data_shared/code/repotune/data/val/django_e13b714/sbv_django_ids.json --output evals/django_e13b714/django_bugfix_full_qwen34i_40k_5ep_cos_g3pro_v0_ckpt493_128k_0
+
+
+uv run mini-extra swebench -c my_issuegen_gemini.yaml --subset django_e13b71_issue_gen --split test --workers 4 --output evals/django_e13b71_issue_gen/gemini25pro_v0
+'''
