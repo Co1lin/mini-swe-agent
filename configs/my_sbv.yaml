@@ -225,16 +225,21 @@ environment:
   pull_timeout: 1200
 
 model:
-  model_name: openai/Qwen/Qwen3-Coder-30B-A3B-Instruct
+  model_name: openai/Qwen/Qwen3-4B-Instruct-2507
   # model_name: openai/django_ar_code_classic_all_r64_qwen3coder30i_12k_2ep_cos_1217_ckpt365
   model_kwargs:
     api_base: http://93.91.156.83:52951/v1 # 8001
     # api_base: http://93.91.156.83:46171/v1 # 8002
+    # api_base: http://93.91.156.83:42452/v1 # 8003
     api_key: colin
     # temperature: 0.0
-    temperature: 0.7
+    temperature: 1.0
     top_p: 0.8
     top_k: 20
     repetition_penalty: 1.05
     drop_params: true
   cost_tracking: ignore_errors
+
+# VERSION=0 PORT=8001 WORKERS=6 MODEL=openai/syn_bugfix_django_qwen34i_r128_32k_3ep_v0_ckpt639 MS=syn_bugfix_django_qwen34i_r128_32k_3ep_v0_ckpt639 REPO=django HASH=e13b714 tools/eval_self.sh
+# VERSION=1 PORT=8002 WORKERS=6 MODEL=openai/syn_bugfix_django_qwen34i_r128_32k_3ep_v0_ckpt639 MS=syn_bugfix_django_qwen34i_r128_32k_3ep_v0_ckpt639 REPO=django HASH=e13b714 tools/eval_self.sh
+# VERSION=2 PORT=8003 WORKERS=6 MODEL=openai/syn_bugfix_django_qwen34i_r128_32k_3ep_v0_ckpt639 MS=syn_bugfix_django_qwen34i_r128_32k_3ep_v0_ckpt639 REPO=django HASH=e13b714 tools/eval_self.sh

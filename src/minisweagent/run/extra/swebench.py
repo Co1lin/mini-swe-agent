@@ -206,6 +206,7 @@ def main(
     redo_existing: bool = typer.Option(False, "--redo-existing", help="Redo existing instances", rich_help_panel="Data selection"),
     config_spec: Path = typer.Option( builtin_config_dir / "extra" / "swebench.yaml", "-c", "--config", help="Path to a config file", rich_help_panel="Basic"),
     environment_class: str | None = typer.Option( None, "--environment-class", help="Environment type to use. Recommended are docker or singularity", rich_help_panel="Advanced"),
+    remote_port_selection: int = typer.Option(0, "--remote-port-selection"),
 ) -> None:
     # fmt: on
     output_path = Path(output)
@@ -243,6 +244,16 @@ def main(
         config.setdefault("model", {})["model_name"] = model
     if model_class is not None:
         config.setdefault("model", {})["model_class"] = model_class
+
+    if remote_port_selection > 0:
+        remote_port = {
+            8001: 52951,
+            8002: 46171,
+            8003: 42452,
+            8004: 44146,
+        }[remote_port_selection]
+        config['model']['model_kwargs']['api_base'] = f"http://93.91.156.83:{remote_port}/v1"
+    logger.info(f"{config['model'] = }")
 
     progress_manager = RunBatchProgressManager(len(instances), output_path / f"exit_statuses_{time.time()}.yaml")
 

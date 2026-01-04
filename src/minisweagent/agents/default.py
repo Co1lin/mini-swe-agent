@@ -123,6 +123,8 @@ class DefaultAgent:
         model_msg = response["content"].strip()
         occurrences = self.model_msg_appearances[model_msg]
         assert occurrences >= 1
+        if occurrences >= 8:
+            raise LimitsExceeded('repeated too many times')
         if occurrences >= 3:
             output_ls = self.env.execute("ls -lh /testbed")["output"]
             raise FormatError(
