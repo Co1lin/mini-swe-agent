@@ -136,6 +136,15 @@ class Stat:
             for k, v in count.items():
                 if k.endswith('_'):
                     print(f"{status}: {k}: {v:.1f}")
+        print(f'-------- all/mean:')
+        for k, v in results['all'].items():
+            if k.endswith('_mean_'):
+                k_show = {
+                    'num_turns_mean_': 'Turns',
+                    'tot_completion_tokens_mean_': 'Compl',
+                    'tot_all_tokens_mean_': 'All',
+                }[k]
+                print(f"{k_show}: {v:.1f}")
         print("########")
         
         return results

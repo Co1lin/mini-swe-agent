@@ -28,3 +28,9 @@ uv run python -m swebench.harness.run_evaluation \
     --run_id $RUN_ID
 
 mv *$RUN_ID.json $OUTPUT_DIR/
+
+uv run tools/eval_loc.py --pred_file $OUTPUT_DIR/preds.json
+
+uv run tools/stat.py run --eval_dir $OUTPUT_DIR
+
+grep _instances $OUTPUT_DIR/*$RUN_ID.json
