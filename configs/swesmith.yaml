@@ -209,7 +209,7 @@ agent:
 
     If you have completed your assignment, please consult the first message about how to
     submit your solution (you will not be able to continue working on this task after that).
-  step_limit: 250
+  step_limit: 64
   cost_limit: 3.
 
 environment:
@@ -224,22 +224,15 @@ environment:
   environment_class: docker
   pull_timeout: 1200
 
+run:
+  env_startup_command: cd /testbed && git checkout {{ instance_id }} && rm -rf .git && git init -b main && git add -A && git config user.email "me@example.com" && git config user.name "Me" && git commit -m'init'
+
 model:
-  # model_name: openai/Qwen/Qwen3-4B-Instruct-2507
-  model_name: openai/mix_syn_bugfix_fim_django_qwen34i_32k_3ep_v0_ckpt1014
-  model_kwargs:
-    api_base: http://93.91.156.83:52951/v1 # 8001
-    # api_base: http://93.91.156.83:46171/v1 # 8002
-    # api_base: http://93.91.156.83:42452/v1 # 8003
-    api_key: colin
-    # temperature: 0.0
-    temperature: 1.0
-    top_p: 0.8
-    top_k: 20
-    repetition_penalty: 1.05
-    drop_params: true
+  model_name: vertex_ai/gemini-2.5-pro
+  # model_name: openai/gpt-5.1-codex
+  # model_kwargs:
+  #   reasoning_effort: low
+    # temperature: 1.0
   cost_tracking: ignore_errors
 
-# VERSION=0 PORT=8001 WORKERS=6 MODEL=openai/syn_bugfix_django_qwen34i_r128_32k_3ep_v0_ckpt639 MS=syn_bugfix_django_qwen34i_r128_32k_3ep_v0_ckpt639 REPO=django HASH=e13b714 tools/eval_self.sh
-# VERSION=1 PORT=8002 WORKERS=6 MODEL=openai/syn_bugfix_django_qwen34i_r128_32k_3ep_v0_ckpt639 MS=syn_bugfix_django_qwen34i_r128_32k_3ep_v0_ckpt639 REPO=django HASH=e13b714 tools/eval_self.sh
-# VERSION=2 PORT=8003 WORKERS=6 MODEL=openai/syn_bugfix_django_qwen34i_r128_32k_3ep_v0_ckpt639 MS=syn_bugfix_django_qwen34i_r128_32k_3ep_v0_ckpt639 REPO=django HASH=e13b714 tools/eval_self.sh
+# VERSION=1 WORKERS=24 MODEL=vertex_ai/gemini-2.5-pro MS=gemini25pro CONFIG=configs/my_sbv_gemini.yaml REPO=django HASH=e13b714 tools/eval_self.sh

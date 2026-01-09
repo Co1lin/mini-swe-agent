@@ -27,6 +27,9 @@ from minisweagent.run.extra.utils.batch_progress import RunBatchProgressManager
 from minisweagent.run.utils.save import save_traj
 from minisweagent.utils.log import add_file_handler, logger
 
+import warnings
+warnings.filterwarnings("ignore", message="Pydantic serializer warnings")
+
 _HELP_TEXT = """Run mini-SWE-agent on SWEBench instances.
 
 [not dim]
@@ -44,6 +47,11 @@ DATASET_MAPPING = {
     "multilingual": "swe-bench/SWE-Bench_Multilingual",
     "smith": "SWE-bench/SWE-smith",
     "_test": "klieret/swe-bench-dummy-test-dataset",
+
+    'swesmith': '/home/colin/code/repotune/data/agentic/bugfix/swe_smith/sb_instances.jsonl',
+    'swesmith_128': '/home/colin/code/repotune/data/agentic/bugfix/swe_smith/sb_instances_128.jsonl',
+    'swesmith_o_128': '/home/colin/code/repotune/data/agentic/bugfix/swe_smith/sb_instances_o_128.jsonl',
+    
     "issue_gen_django_e13b71": "/mnt/data_shared/code/repotune/data/issue_gen/django_20241227_8d9901c/sb_instances.jsonl",
     "issue_gen_git_django_e13b71": "/mnt/data_shared/code/repotune/data/issue_gen_git/django_20241227_8d9901c/sb_instances.jsonl",
 }
