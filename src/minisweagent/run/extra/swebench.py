@@ -52,8 +52,10 @@ DATASET_MAPPING = {
     'swesmith_128': '/home/colin/code/repotune/data/agentic/bugfix/swe_smith/sb_instances_128.jsonl',
     'swesmith_o_128': '/home/colin/code/repotune/data/agentic/bugfix/swe_smith/sb_instances_o_128.jsonl',
     
-    "issue_gen_django_e13b71": "/mnt/data_shared/code/repotune/data/issue_gen/django_20241227_8d9901c/sb_instances.jsonl",
-    "issue_gen_git_django_e13b71": "/mnt/data_shared/code/repotune/data/issue_gen_git/django_20241227_8d9901c/sb_instances.jsonl",
+    'syn_django_20201231_e13b714': '/mnt/data_shared/code/repotune/data/syn/bugfix/django_20201231_e13b714/sb_instances.jsonl',
+    "syn_sphinx_20201231_4b45233": "/mnt/data_shared/code/repotune/data/syn/bugfix/sphinx_20201231_4b45233/sb_instances.jsonl",
+    'syn_matplotlib_20201231_5b89c9c5': '/mnt/data_shared/code/repotune/data/syn/bugfix/matplotlib_20201231_5b89c9c5/sb_instances.jsonl',
+    'syn_sympy_20201231_6f92459': '/mnt/data_shared/code/repotune/data/syn/bugfix/sympy_20201231_6f92459/sb_instances.jsonl',
 }
 
 
