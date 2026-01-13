@@ -104,10 +104,13 @@ def make_run_report(
             image_name = spec.instance_image_key
             if image_name in images:
                 unremoved_images.add(image_name)
-        containers = client.containers.list(all=True)
-        for container in containers:
-            if run_id in container.name:
-                unstopped_containers.add(container.name)
+        try:
+            containers = client.containers.list(all=True)
+            for container in containers:
+                if run_id in container.name:
+                    unstopped_containers.add(container.name)
+        except Exception as e:
+            pass
 
     # print final report
     dataset_ids = {i[KEY_INSTANCE_ID] for i in full_dataset}

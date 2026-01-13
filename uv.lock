@@ -1989,8 +1989,8 @@ requires-dist = [
     { name = "ruff", marker = "extra == 'dev'" },
     { name = "sb-cli", marker = "extra == 'dev'" },
     { name = "swe-rex", marker = "extra == 'full'", specifier = ">=1.4.0" },
-    { name = "swebench", marker = "extra == 'dev'", git = "https://github.com/SWE-bench/SWE-bench.git?rev=main" },
-    { name = "swesmith", marker = "extra == 'dev'", git = "https://github.com/SWE-bench/SWE-smith.git?rev=main" },
+    { name = "swebench", marker = "extra == 'dev'", directory = "third_party/SWE-bench" },
+    { name = "swesmith", marker = "extra == 'dev'", directory = "third_party/SWE-smith" },
     { name = "tenacity" },
     { name = "textual" },
     { name = "typer" },
@@ -3883,8 +3883,7 @@ wheels = [
 
 [[package]]
 name = "swebench"
-version = "4.1.0"
-source = { git = "https://github.com/SWE-bench/SWE-bench.git?rev=main#fa79f3af3e0f212d4d14b1c858c77fcaae5308ce" }
+source = { directory = "third_party/SWE-bench" }
 dependencies = [
     { name = "beautifulsoup4" },
     { name = "chardet" },
@@ -3902,10 +3901,124 @@ dependencies = [
     { name = "unidiff" },
 ]
 
+[package.metadata]
+requires-dist = [
+    { name = "anthropic", marker = "extra == 'datasets'" },
+    { name = "anthropic", marker = "extra == 'inference'" },
+    { name = "beautifulsoup4" },
+    { name = "chardet" },
+    { name = "datasets" },
+    { name = "docker" },
+    { name = "flash-attn", marker = "extra == 'inference'", specifier = ">=2.0.0" },
+    { name = "ghapi" },
+    { name = "gitpython" },
+    { name = "jedi", marker = "extra == 'datasets'" },
+    { name = "jedi", marker = "extra == 'inference'" },
+    { name = "mike", marker = "extra == 'docs'" },
+    { name = "mkdocs", marker = "extra == 'docs'" },
+    { name = "mkdocs-glightbox", marker = "extra == 'docs'" },
+    { name = "mkdocs-include-markdown-plugin", marker = "extra == 'docs'" },
+    { name = "mkdocs-material", marker = "extra == 'docs'" },
+    { name = "mkdocstrings", marker = "extra == 'docs'" },
+    { name = "mkdocstrings-python", marker = "extra == 'docs'" },
+    { name = "modal" },
+    { name = "openai", marker = "extra == 'datasets'" },
+    { name = "openai", marker = "extra == 'inference'" },
+    { name = "peft", marker = "extra == 'inference'" },
+    { name = "pre-commit" },
+    { name = "protobuf", marker = "extra == 'datasets'" },
+    { name = "protobuf", marker = "extra == 'inference'" },
+    { name = "pymdown-extensions", marker = "extra == 'docs'" },
+    { name = "pytest", marker = "extra == 'test'" },
+    { name = "pytest-cov", marker = "extra == 'test'" },
+    { name = "python-dotenv" },
+    { name = "requests" },
+    { name = "requests", marker = "extra == 'inference'" },
+    { name = "rich" },
+    { name = "sentencepiece", marker = "extra == 'datasets'" },
+    { name = "sentencepiece", marker = "extra == 'inference'" },
+    { name = "tenacity" },
+    { name = "tiktoken", marker = "extra == 'datasets'" },
+    { name = "tiktoken", marker = "extra == 'inference'" },
+    { name = "torch", marker = "extra == 'inference'", specifier = ">=2.0.0" },
+    { name = "tqdm" },
+    { name = "transformers", marker = "extra == 'datasets'" },
+    { name = "transformers", marker = "extra == 'inference'" },
+    { name = "triton", marker = "extra == 'inference'" },
+    { name = "unidiff" },
+]
+provides-extras = ["datasets", "inference", "test", "docs"]
+
 [[package]]
 name = "swesmith"
-version = "0.0.7"
-source = { git = "https://github.com/SWE-bench/SWE-smith.git?rev=main#1a919bc2bcd93dbe07efeacbce3c7557fe6bc3d7" }
+source = { directory = "third_party/SWE-smith" }
+
+[package.metadata]
+requires-dist = [
+    { name = "astor", marker = "extra == 'all'" },
+    { name = "astor", marker = "extra == 'generate'" },
+    { name = "datasets", marker = "extra == 'all'" },
+    { name = "docker", marker = "extra == 'all'" },
+    { name = "docker", marker = "extra == 'generate'" },
+    { name = "ghapi", marker = "extra == 'all'" },
+    { name = "ghapi", marker = "extra == 'generate'" },
+    { name = "ghapi", marker = "extra == 'validate'" },
+    { name = "libcst", marker = "extra == 'all'" },
+    { name = "libcst", marker = "extra == 'generate'" },
+    { name = "litellm", marker = "extra == 'all'" },
+    { name = "matplotlib", marker = "extra == 'all'" },
+    { name = "mike", marker = "extra == 'docs'" },
+    { name = "mkdocs", marker = "extra == 'docs'" },
+    { name = "mkdocs-glightbox", marker = "extra == 'docs'" },
+    { name = "mkdocs-include-markdown-plugin", marker = "extra == 'docs'" },
+    { name = "mkdocs-material", marker = "extra == 'docs'" },
+    { name = "mkdocstrings", extras = ["python"], marker = "extra == 'docs'", specifier = ">=0.18" },
+    { name = "modal", marker = "extra == 'all'" },
+    { name = "openai", marker = "extra == 'all'" },
+    { name = "pre-commit", marker = "extra == 'all'" },
+    { name = "pytest", marker = "extra == 'test'" },
+    { name = "pytest-cov", marker = "extra == 'test'" },
+    { name = "python-dotenv", marker = "extra == 'all'" },
+    { name = "python-dotenv", marker = "extra == 'generate'" },
+    { name = "python-dotenv", marker = "extra == 'validate'" },
+    { name = "rich", marker = "extra == 'all'" },
+    { name = "rich", marker = "extra == 'generate'" },
+    { name = "rich", marker = "extra == 'validate'" },
+    { name = "sglang", marker = "extra == 'all'" },
+    { name = "sparklines", marker = "extra == 'all'" },
+    { name = "swebench", marker = "extra == 'all'" },
+    { name = "swebench", marker = "extra == 'generate'" },
+    { name = "swebench", marker = "extra == 'validate'" },
+    { name = "textual", marker = "extra == 'all'" },
+    { name = "tiktoken", marker = "extra == 'all'" },
+    { name = "tqdm", marker = "extra == 'all'" },
+    { name = "tqdm", marker = "extra == 'generate'" },
+    { name = "tqdm", marker = "extra == 'validate'" },
+    { name = "tree-sitter", marker = "extra == 'all'", specifier = ">=0.25" },
+    { name = "tree-sitter", marker = "extra == 'generate'", specifier = ">=0.25" },
+    { name = "tree-sitter-c", marker = "extra == 'all'" },
+    { name = "tree-sitter-c", marker = "extra == 'generate'" },
+    { name = "tree-sitter-c-sharp", marker = "extra == 'all'" },
+    { name = "tree-sitter-c-sharp", marker = "extra == 'generate'" },
+    { name = "tree-sitter-cpp", marker = "extra == 'all'" },
+    { name = "tree-sitter-cpp", marker = "extra == 'generate'" },
+    { name = "tree-sitter-go", marker = "extra == 'all'" },
+    { name = "tree-sitter-go", marker = "extra == 'generate'" },
+    { name = "tree-sitter-java", marker = "extra == 'all'" },
+    { name = "tree-sitter-java", marker = "extra == 'generate'" },
+    { name = "tree-sitter-javascript", marker = "extra == 'all'" },
+    { name = "tree-sitter-javascript", marker = "extra == 'generate'" },
+    { name = "tree-sitter-php", marker = "extra == 'all'", specifier = ">=0.23.11" },
+    { name = "tree-sitter-php", marker = "extra == 'generate'", specifier = ">=0.23.11" },
+    { name = "tree-sitter-ruby", marker = "extra == 'all'" },
+    { name = "tree-sitter-ruby", marker = "extra == 'generate'" },
+    { name = "tree-sitter-rust", marker = "extra == 'all'" },
+    { name = "tree-sitter-rust", marker = "extra == 'generate'" },
+    { name = "unidiff", marker = "extra == 'all'" },
+    { name = "unidiff", marker = "extra == 'generate'" },
+    { name = "unidiff", marker = "extra == 'validate'" },
+]
+provides-extras = ["all", "docs", "test", "validate", "generate"]
 
 [[package]]
 name = "synchronicity"

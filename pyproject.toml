@@ -75,9 +75,13 @@ dev = [
     "docker",
     "fire",
     "loguru",
-    "swebench @ git+https://github.com/SWE-bench/SWE-bench.git@main",
-    "swesmith @ git+https://github.com/SWE-bench/SWE-smith.git@main",
+    "swebench",
+    "swesmith",
 ]
+
+[tool.uv.sources]
+swesmith = { path = "third_party/SWE-smith" }
+swebench = { path = "third_party/SWE-bench" }
 
 [project.urls]
 Documentation = "https://mini-swe-agent.com/latest/"
