@@ -56,6 +56,10 @@ DATASET_MAPPING = {
     "syn_sphinx_20201231_4b45233": "/mnt/data_shared/code/repotune/data/syn/bugfix/sphinx_20201231_4b45233/sb_instances.jsonl",
     'syn_matplotlib_20201231_5b89c9c5': '/mnt/data_shared/code/repotune/data/syn/bugfix/matplotlib_20201231_5b89c9c5/sb_instances.jsonl',
     'syn_sympy_20201231_6f92459': '/mnt/data_shared/code/repotune/data/syn/bugfix/sympy_20201231_6f92459/sb_instances.jsonl',
+
+    'refine_syn_bugfix_django_20201231_e13b714': '/mnt/data_shared/code/repotune/data/refine/syn/bugfix/django_20201231_e13b714/sb_instances.jsonl',
+    
+    'refine_bugfix_django_20201231_e13b714': '/mnt/data_shared/code/repotune/data/refine/bugfix/django/sb_instances.jsonl',
 }
 
 
@@ -162,7 +166,7 @@ def process_instance(
             instance_id=instance_id,
             **config.get("agent", {}),
         )
-        exit_status, result = agent.run(task)
+        exit_status, result = agent.run(task, **instance)
     except Exception as e:
         logger.error(f"Error processing instance {instance_id}: {e}", exc_info=True)
         exit_status, result = type(e).__name__, str(e)
