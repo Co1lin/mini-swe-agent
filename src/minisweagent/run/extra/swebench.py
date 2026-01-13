@@ -48,9 +48,9 @@ DATASET_MAPPING = {
     "smith": "SWE-bench/SWE-smith",
     "_test": "klieret/swe-bench-dummy-test-dataset",
 
-    'swesmith': '/home/colin/code/repotune/data/agentic/bugfix/swe_smith/sb_instances.jsonl',
-    'swesmith_128': '/home/colin/code/repotune/data/agentic/bugfix/swe_smith/sb_instances_128.jsonl',
-    'swesmith_o_128': '/home/colin/code/repotune/data/agentic/bugfix/swe_smith/sb_instances_o_128.jsonl',
+    'swesmith': '/home/colin/code/repotune/data/agentic/bugfix/swesmith/sb_instances.jsonl',
+    'swesmith_128': '/home/colin/code/repotune/data/agentic/bugfix/swesmith/sb_instances_128.jsonl',
+    'swesmith_o_128': '/home/colin/code/repotune/data/agentic/bugfix/swesmith/sb_instances_o_128.jsonl',
     
     'syn_django_20201231_e13b714': '/mnt/data_shared/code/repotune/data/syn/bugfix/django_20201231_e13b714/sb_instances.jsonl',
     "syn_sphinx_20201231_4b45233": "/mnt/data_shared/code/repotune/data/syn/bugfix/sphinx_20201231_4b45233/sb_instances.jsonl",

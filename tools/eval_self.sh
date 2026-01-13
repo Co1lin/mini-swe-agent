@@ -24,7 +24,7 @@ sleep 3s
 uv run python -m swebench.harness.run_evaluation \
     --dataset_name princeton-nlp/SWE-bench_Verified \
     --predictions_path $OUTPUT_DIR/preds.json \
-    --max_workers 16 \
+    --max_workers 8 \
     --run_id $RUN_ID
 
 mv *$RUN_ID.json $OUTPUT_DIR/
