@@ -80,8 +80,8 @@ dev = [
 ]
 
 [tool.uv.sources]
-swesmith = { path = "third_party/SWE-smith" }
-swebench = { path = "third_party/SWE-bench" }
+swesmith = { path = "third_party/SWE-smith", editable = true }
+swebench = { path = "third_party/SWE-bench", editable = true }
 
 [project.urls]
 Documentation = "https://mini-swe-agent.com/latest/"

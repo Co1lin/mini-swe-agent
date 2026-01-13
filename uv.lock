@@ -1989,8 +1989,8 @@ requires-dist = [
     { name = "ruff", marker = "extra == 'dev'" },
     { name = "sb-cli", marker = "extra == 'dev'" },
     { name = "swe-rex", marker = "extra == 'full'", specifier = ">=1.4.0" },
-    { name = "swebench", marker = "extra == 'dev'", directory = "third_party/SWE-bench" },
-    { name = "swesmith", marker = "extra == 'dev'", directory = "third_party/SWE-smith" },
+    { name = "swebench", marker = "extra == 'dev'", editable = "third_party/SWE-bench" },
+    { name = "swesmith", marker = "extra == 'dev'", editable = "third_party/SWE-smith" },
     { name = "tenacity" },
     { name = "textual" },
     { name = "typer" },
@@ -3883,7 +3883,7 @@ wheels = [
 
 [[package]]
 name = "swebench"
-source = { directory = "third_party/SWE-bench" }
+source = { editable = "third_party/SWE-bench" }
 dependencies = [
     { name = "beautifulsoup4" },
     { name = "chardet" },
@@ -3951,7 +3951,7 @@ provides-extras = ["datasets", "inference", "test", "docs"]
 
 [[package]]
 name = "swesmith"
-source = { directory = "third_party/SWE-smith" }
+source = { editable = "third_party/SWE-smith" }
 
 [package.metadata]
 requires-dist = [
