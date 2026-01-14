@@ -5,6 +5,7 @@ from pathlib import Path
 from dataclasses import dataclass
 import fire
 import yaml
+from collections import defaultdict
 
 from loguru import logger
 
@@ -36,12 +37,18 @@ class Stat:
         if not status_files:
             raise FileNotFoundError(f"No exit_statuses_*.yaml found in {self.eval_dir}")
 
+        instances_by_exit_status: dict[str, list[str]] = defaultdict(list)
+        for status_file in status_files:
+            data = yaml.safe_load(status_file.open()).get("instances_by_exit_status", {})
+            for status, instance_ids in data.items():
+                instances_by_exit_status[status] = list(set(instances_by_exit_status[status] + instance_ids))
+            
         # Use the first one found
-        status_file = status_files[0]
-        with open(status_file) as f:
-            data = yaml.safe_load(f)
+        # status_file = status_files[0]
+        # with open(status_file) as f:
+        #     data = yaml.safe_load(f)
 
-        return data.get("instances_by_exit_status", {})
+        return instances_by_exit_status
     
     def get_traj(self, instance_id: str) -> dict:
         traj_path = self.eval_dir / instance_id / f"{instance_id}.traj.json"
