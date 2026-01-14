@@ -208,6 +208,7 @@ def filter_instances(
 # fmt: off
 @app.command(help=_HELP_TEXT)
 def main(
+    dataset_path: str = typer.Option("", "--dataset_path"),
     subset: str = typer.Option("lite", "--subset", help="SWEBench subset to use or path to a dataset", rich_help_panel="Data selection"),
     split: str = typer.Option("dev", "--split", help="Dataset split", rich_help_panel="Data selection"),
     slice_spec: str = typer.Option("", "--slice", help="Slice specification (e.g., '0:5' for first 5 instances)", rich_help_panel="Data selection"),
@@ -229,7 +230,7 @@ def main(
     logger.info(f"Results will be saved to {output_path}")
     add_file_handler(output_path / "minisweagent.log")
 
-    dataset_path = DATASET_MAPPING.get(subset, subset)
+    dataset_path = DATASET_MAPPING.get(subset, subset) if not dataset_path else dataset_path
     logger.info(f"Loading dataset {dataset_path}, split {split}...")
     if dataset_path.endswith(".jsonl"):
         instances = list(load_dataset('json', data_files=dataset_path, split='train'))

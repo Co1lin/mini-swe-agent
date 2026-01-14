@@ -1,8 +1,8 @@
 set -x
 
 PORT=${PORT:-0}
-MODEL=${MODEL:-openai/Qwen/Qwen3-4B-Instruct-2507}
-MS=${MS:-$MODEL}
+MS=${MS:-unknown}
+MODEL=${MODEL:-openai/$MS}
 REPO=${REPO:-django}
 HASH=${HASH:-e13b714}
 VERSION=${VERSION:-1}
@@ -24,7 +24,7 @@ sleep 3s
 uv run python -m swebench.harness.run_evaluation \
     --dataset_name princeton-nlp/SWE-bench_Verified \
     --predictions_path $OUTPUT_DIR/preds.json \
-    --max_workers 8 \
+    --max_workers 12 \
     --run_id $RUN_ID
 
 mv *$RUN_ID.json $OUTPUT_DIR/
