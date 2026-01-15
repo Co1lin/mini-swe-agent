@@ -8,6 +8,7 @@ HASH=${HASH:-e13b714}
 VERSION=${VERSION:-1}
 CONFIG=${CONFIG:-configs/my_sbv.yaml}
 WORKERS=${WORKERS:-12}
+RUN_EVAL=${RUN_EVAL:-true}
 
 REPO_HASH=${REPO}_${HASH}
 OUTPUT_DIR=evals/$REPO_HASH/$MS/v$VERSION
@@ -19,18 +20,20 @@ uv run mini-extra swebench -c $CONFIG --subset verified --split test --workers $
     --remote-port-selection $PORT \
     --output $OUTPUT_DIR
 
-sleep 3s
+if [ "$RUN_EVAL" = "true" ]; then
+    uv run python -m swebench.harness.run_evaluation \
+        --dataset_name princeton-nlp/SWE-bench_Verified \
+        --predictions_path $OUTPUT_DIR/preds.json \
+        --max_workers 12 \
+        --run_id $RUN_ID
 
-uv run python -m swebench.harness.run_evaluation \
-    --dataset_name princeton-nlp/SWE-bench_Verified \
-    --predictions_path $OUTPUT_DIR/preds.json \
-    --max_workers 12 \
-    --run_id $RUN_ID
+    mv *$RUN_ID.json $OUTPUT_DIR/
 
-mv *$RUN_ID.json $OUTPUT_DIR/
+    uv run tools/eval_loc.py --pred_file $OUTPUT_DIR/preds.json
 
-uv run tools/eval_loc.py --pred_file $OUTPUT_DIR/preds.json
+    uv run tools/stat.py run --eval_dir $OUTPUT_DIR
 
-uv run tools/stat.py run --eval_dir $OUTPUT_DIR
-
-grep _instances $OUTPUT_DIR/*$RUN_ID.json
+    grep _instances $OUTPUT_DIR/*$RUN_ID.json
+else
+    echo 'skipping evaluation'
+fi
