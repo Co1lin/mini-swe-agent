@@ -225,10 +225,20 @@ environment:
   pull_timeout: 1200
 
 model:
-  model_name: vertex_ai/gemini-2.5-pro
-  # model_kwargs:
-  #   reasoning_effort: low
-    # temperature: 1.0
+  model_name: openai/qwen/qwen3-coder-30b-a3b-instruct
+  model_kwargs:
+    api_base: https://openrouter.ai/api/v1
+    # api_key: colin
+    # temperature: 0.0
+    temperature: 1.0
+    top_p: 0.8
+    top_k: 20
+    repetition_penalty: 1.05
+    extra_body:
+      provider:
+        order: ['alibaba']
+        allow_fallbacks: false
+    # drop_params: true
   cost_tracking: ignore_errors
 
 # VERSION=1 WORKERS=24 MODEL=vertex_ai/gemini-2.5-pro MS=gemini25pro CONFIG=configs/my_sbv_gemini.yaml REPO=django HASH=e13b714 tools/eval_self.sh

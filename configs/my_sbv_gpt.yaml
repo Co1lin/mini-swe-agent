@@ -225,9 +225,9 @@ environment:
   pull_timeout: 1200
 
 model:
-  model_name: vertex_ai/gemini-2.5-pro
+  model_name: openai/gpt-4.1-mini
   # model_kwargs:
-  #   reasoning_effort: low
+  #   reasoning_effort: minimal
     # temperature: 1.0
   cost_tracking: ignore_errors
 
