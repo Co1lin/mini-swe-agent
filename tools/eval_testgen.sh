@@ -6,17 +6,17 @@ MODEL=${MODEL:-openai/$MS}
 MODEL_CLASS=${MODEL_CLASS:-litellm}
 REPO=${REPO:-django}
 HASH=${HASH:-e13b714}
-VERSION=${VERSION:-1}
-CONFIG=${CONFIG:-configs/my_sbv.yaml}
+VERSION=${VERSION:-0}
+CONFIG=${CONFIG:-configs/testgen/gpt.yaml}
 WORKERS=${WORKERS:-12}
 RUN_EVAL=${RUN_EVAL:-true}
 
 REPO_HASH=${REPO}_${HASH}
-OUTPUT_DIR=evals/$REPO_HASH/$MS/v$VERSION
-RUN_ID=bugfix_${REPO_HASH}_${MS}_v${VERSION}
+OUTPUT_DIR=evals/testgen/$REPO_HASH/$MS/v$VERSION
+RUN_ID=testgen_${REPO_HASH}_${MS}_v${VERSION}
 
-uv run mini-extra swebench -c $CONFIG --subset verified --split test --workers $WORKERS \
-    --instance-ids-paths /home/colin/code/repotune/data/val/$REPO_HASH/sbv_${REPO_HASH}_ids.json \
+uv run mini-extra swebench -c $CONFIG --workers $WORKERS \
+    --subset data/testgen/$REPO.jsonl \
     --model $MODEL \
     --model-class $MODEL_CLASS \
     --remote-port-selection $PORT \
@@ -26,7 +26,6 @@ if [ "$RUN_EVAL" = "true" ]; then
     uv run python -m swebench.harness.run_evaluation \
         --dataset_name princeton-nlp/SWE-bench_Verified \
         --predictions_path $OUTPUT_DIR/preds.json \
-        --timeout 600 \
         --max_workers 12 \
         --run_id $RUN_ID
 
