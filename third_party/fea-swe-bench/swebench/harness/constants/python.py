@@ -1,3 +1,10 @@
+class DefaultDict(dict):
+    def __getitem__(self, key):
+        try:
+            return super().__getitem__(key)
+        except KeyError:
+            return self.get('default', None)
+
 # Constants - Testing Commands 
 TEST_PYTEST = "pytest --no-header -rA --tb=no -p no:cacheprovider"
 TEST_PYTEST_VERBOSE = "pytest -rA --tb=long -p no:cacheprovider"
@@ -17,28 +24,68 @@ TEST_SYMPY_VERBOSE = "bin/test -C --verbose"
 SPECS_SKLEARN = {
     k: {
         "python": "3.6",
-        "packages": "numpy scipy cython pytest pandas matplotlib",
+        "packages": "numpy scipy cython pytest pandas",
         "install": "python -m pip install -v --no-use-pep517 --no-build-isolation -e .",
         "pip_packages": [
             "cython",
             "numpy==1.19.2",
             "setuptools",
             "scipy==1.5.2",
+            "matplotlib",
         ],
         "test_cmd": TEST_PYTEST,
     }
-    for k in ["0.20", "0.21", "0.22"]
+    for k in ["0.20", "0.21", "0.22", "0.23", "0.24"]
 }
 SPECS_SKLEARN.update(
     {
         k: {
             "python": "3.9",
-            "packages": "'numpy==1.19.2' 'scipy==1.5.2' 'cython==3.0.10' pytest 'pandas<2.0.0' 'matplotlib<3.9.0' setuptools pytest joblib threadpoolctl",
+            "packages": "'numpy==1.19.2' 'scipy==1.5.2' 'cython==3.0.10' pytest 'pandas<2.0.0' setuptools pytest joblib threadpoolctl",
             "install": "python -m pip install -v --no-use-pep517 --no-build-isolation -e .",
-            "pip_packages": ["cython", "setuptools", "numpy", "scipy"],
+            "pip_packages": ["'matplotlib<3.9.0'", "cython==3.0.10", "setuptools", "numpy==1.19.2", "scipy"],
             "test_cmd": TEST_PYTEST,
         }
-        for k in ["1.3", "1.4", "1.5", "1.6"]
+        for k in ["1.3", "1.4"]
+    }
+)
+
+SPECS_SKLEARN.update(
+    {
+        k: {
+            "python": "3.9",
+            "packages": "'numpy==1.19.2' 'scipy==1.5.2' pytest 'pandas<2.0.0' 'setuptools<65' pytest joblib threadpoolctl",
+            "install": "python -m pip install -v --no-use-pep517 --no-build-isolation -e .",
+            "pip_packages": ["'matplotlib<3.9.0'", "cython==0.29.32", "numpy==1.19.2", "scipy"],
+            "test_cmd": TEST_PYTEST,
+        }
+        for k in ["1.2"]
+    }
+)
+
+SPECS_SKLEARN.update(
+    {
+        k: {
+            "python": "3.9",
+            "packages": "'numpy' 'scipy' 'cython==3.0.10' 'pandas<2.0.0' setuptools pytest joblib threadpoolctl",
+            "install": "python -m pip install -v --no-build-isolation -e .",
+            "pip_packages": ["ninja", "meson-python", "'matplotlib<3.9.0'"],
+            "test_cmd": TEST_PYTEST,
+        }
+        for k in ["1.5", "1.6"]
+    }
+)
+
+SPECS_SKLEARN.update(
+    {
+        k: {
+            "python": "3.8",
+            "packages": "'numpy==1.19.2' 'scipy==1.5.2' pytest 'pandas<2.0.0' 'setuptools<65' pytest joblib threadpoolctl",
+            "install": "python -m pip install -v --no-use-pep517 --no-build-isolation -e .",
+            "pip_packages": ["cython==0.29.32", "numpy", "scipy", "'matplotlib<3.9.0'"],
+            "test_cmd": TEST_PYTEST,
+        }
+        for k in ["1.0", "1.1"]
     }
 )
 
@@ -410,7 +457,7 @@ SPECS_MATPLOTLIB.update(
             "pre_install": [
                 "apt-get -y update && apt-get -y upgrade && DEBIAN_FRONTEND=noninteractive apt-get install -y imagemagick ffmpeg libfreetype6-dev pkg-config texlive texlive-latex-extra texlive-fonts-recommended texlive-xetex texlive-luatex cm-super"
             ],
-            "pip_packages": ["pytest", "ipython"],
+            "pip_packages": ["'setuptools<60'", "setuptools-scm==7.1.0", "pytest", "ipython"],
             "test_cmd": TEST_PYTEST,
         }
         for k in ["3.1", "3.2", "3.3", "3.4"]
@@ -825,10 +872,10 @@ SPECS_PVLIB = {
         "python": "3.9",
         "install": "python -m pip install -e .[all]",
         "packages": "pandas scipy",
-        "pip_packages": ["jupyter", "ipython", "matplotlib", "pytest", "flake8"],
+        "pip_packages": ["'numpy<2.0'", "jupyter", "ipython", "matplotlib", "pytest", "flake8"],
         "test_cmd": TEST_PYTEST,
     }
-    for k in ["0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9"]
+    for k in ["0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9", '0.10', '0.11']
 }
 
 SPECS_PYDICOM = {
@@ -868,6 +915,74 @@ SPECS_PYDICOM.update(
 
 SPECS_HUMANEVAL = {k: {"python": "3.9", "test_cmd": "python"} for k in ["1.0"]}
 
+SPECS_CONAN = DefaultDict({
+    k: {
+        "python": "3.9",
+        "install": "pip install -e .",
+        # "packages": "",
+        "pip_packages": ["pytest", "bottle", "mock", "webtest", "jwt"],
+        "test_cmd": TEST_PYTEST,
+    }
+    for k in [None, 'default', '2.10', '2.12']
+})
+
+SPECS_PYTORCH_VISION = DefaultDict({
+    k: {
+        "python": "3.9",
+        "install": "pip install -e .",
+        # "packages": "",
+        "pip_packages": ["pytest", "torch"],
+        "test_cmd": TEST_PYTEST,
+    }
+    for k in [None, 'default']
+})
+
+SPECS_ACCELERATE = DefaultDict({
+    k: {
+        "python": "3.9",
+        "install": "pip install torch==2.5.0 ; pip install -e .",
+        # "packages": "",
+        "pip_packages": ["pytest"],
+        "test_cmd": TEST_PYTEST,
+    }
+    for k in [None, 'default']
+})
+
+SPECS_TORTOISE = DefaultDict({
+    k: {
+        "python": "3.9",
+        "install": "pip install -e .",
+        # "packages": "",
+        "pip_packages": ["pydantic", "pytest"],
+        "test_cmd": TEST_PYTEST,
+    }
+    for k in [None, 'default']
+})
+
+SPECS_PYTHON39 = DefaultDict({
+    k: {
+        "python": "3.9",
+        "install": "pip install -e .",
+        # "packages": "",
+        "pip_packages": ["pytest"],
+        "test_cmd": TEST_PYTEST,
+    }
+    for k in [None, 'default']
+})
+
+SPECS_PYTHON310 = DefaultDict({
+    k: {
+        "python": "3.10",
+        "install": "pip install -e .",
+        # "packages": "",
+        "pip_packages": ["pytest"],
+        "test_cmd": TEST_PYTEST,
+    }
+    for k in [None, 'default']
+})
+
+
+
 # Constants - Task Instance Instllation Environment
 MAP_REPO_VERSION_TO_SPECS_PY = {
     "astropy/astropy": SPECS_ASTROPY,
@@ -890,6 +1005,18 @@ MAP_REPO_VERSION_TO_SPECS_PY = {
     "sqlfluff/sqlfluff": SPECS_SQLFLUFF,
     "swe-bench/humaneval": SPECS_HUMANEVAL,
     "sympy/sympy": SPECS_SYMPY,
+
+    "huggingface/datasets": SPECS_PYTHON310,
+    "huggingface/accelerate": SPECS_ACCELERATE,
+    "encode/django-rest-framework": SPECS_PYTHON310,
+    "twisted/twisted": SPECS_PYTHON310,
+    "Cog-Creators/Red-DiscordBot": SPECS_PYTHON310,
+    "conan-io/conan": SPECS_CONAN,
+    "pytorch/vision": SPECS_PYTORCH_VISION,
+    "gradio-app/gradio": SPECS_PYTHON310,
+    "tensorflow/datasets": SPECS_PYTHON310,
+    "tortoise/tortoise-orm": SPECS_TORTOISE,
+    "default": SPECS_PYTHON39,
 }
 
 # Constants - Repository Specific Installation Instructions

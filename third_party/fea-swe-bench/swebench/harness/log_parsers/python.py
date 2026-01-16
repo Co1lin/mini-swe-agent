@@ -260,7 +260,15 @@ parse_log_scikit = parse_log_pytest_v2
 parse_log_sphinx = parse_log_pytest_v2
 
 
-MAP_REPO_TO_PARSER_PY = {
+class DefaultDict(dict):
+    def __getitem__(self, key):
+        try:
+            return super().__getitem__(key)
+        except KeyError:
+            return self.get('default', None)
+
+
+MAP_REPO_TO_PARSER_PY = DefaultDict({
     "astropy/astropy": parse_log_astropy,
     "django/django": parse_log_django,
     "marshmallow-code/marshmallow": parse_log_marshmallow,
@@ -279,4 +287,5 @@ MAP_REPO_TO_PARSER_PY = {
     "sqlfluff/sqlfluff": parse_log_sqlfluff,
     "sphinx-doc/sphinx": parse_log_sphinx,
     "sympy/sympy": parse_log_sympy,
-}
+    "default": parse_log_pytest_v2,
+})
