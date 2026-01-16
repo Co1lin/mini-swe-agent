@@ -1,6 +1,6 @@
 __version__ = "1.2.0"
 
-from src.constants import (
+from swtbench.constants import (
     KEY_INSTANCE_ID,
     KEY_MODEL,
     KEY_PREDICTION,
@@ -9,7 +9,7 @@ from src.constants import (
     ResolvedStatus
 )
 
-from src.docker_build import (
+from swtbench.docker_build import (
     build_image,
     build_base_images,
     build_env_images,
@@ -19,7 +19,7 @@ from src.docker_build import (
     setup_logger,
 )
 
-from src.docker_utils import (
+from swtbench.docker_utils import (
     cleanup_container,
     remove_image,
     copy_to_container,
@@ -27,7 +27,7 @@ from src.docker_utils import (
     list_images,
 )
 
-from src.grading import (
+from swtbench.grading import (
     compute_fail_to_pass,
     compute_pass_to_pass,
     get_logs_eval,
@@ -37,15 +37,15 @@ from src.grading import (
     TestStatus,
 )
 
-from src.log_parsers import (
+from swtbench.log_parsers import (
     MAP_REPO_TO_PARSER,
 )
 
-from src.main import (
+from swtbench.main import (
     run,
 )
 
-from src.utils import (
+from swtbench.utils import (
     get_environment_yml,
     get_requirements,
 )

@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from src.constants import (
+from swtbench.constants import (
     SWEbenchInstance,
 )
 
-from src.exec_spec import ExecSpec, make_exec_spec, ExecMode
+from swtbench.exec_spec import ExecSpec, make_exec_spec, ExecMode
 
 DIFF_MODIFIED_FILE_REGEX = r"--- a/(.*)"
 

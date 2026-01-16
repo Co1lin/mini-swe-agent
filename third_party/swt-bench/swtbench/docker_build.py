@@ -10,27 +10,27 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from docker.models.containers import Container
 
-from src.constants import (
+from swtbench.constants import (
     BASE_IMAGE_BUILD_DIR,
     ENV_IMAGE_BUILD_DIR,
     INSTANCE_IMAGE_BUILD_DIR,
     MAP_VERSION_TO_INSTALL,
 )
-from src.test_spec import (
+from swtbench.test_spec import (
     make_test_spec,
     TestSpec
 )
-from src.docker_utils import (
+from swtbench.docker_utils import (
     cleanup_container,
     remove_image,
     find_dependent_images,
     BuildMode,
 )
 
-from src.exec_spec import (ExecSpec,
+from swtbench.exec_spec import (ExecSpec,
                                         get_exec_specs_from_dataset,)
 
-from src.utils import Locker, setup_logger, close_logger
+from swtbench.utils import Locker, setup_logger, close_logger
 
 ansi_escape = re.compile(r"\x1B\[[0-?]*[ -/]*[@-~]")
 
@@ -740,6 +740,7 @@ def build_container(
             command="tail -f /dev/null",
             nano_cpus=nano_cpus,
             platform=exec_spec.platform,
+            mem_limit="8g",
         )
         logger.info(f"Container for {exec_spec.instance_id} created: {container.id}")
         return container

@@ -11,14 +11,14 @@ from argparse import ArgumentTypeError
 from dotenv import load_dotenv
 from functools import cache
 from pathlib import Path
-from src.constants import (
+from swtbench.constants import (
     SWEbenchInstance,
     MAP_REPO_TO_ENV_YML_PATHS,
     MAP_REPO_TO_REQS_PATHS,
     NON_TEST_EXTS,
     SWE_BENCH_URL_RAW,
 )
-from src.constants import (
+from swtbench.constants import (
     INSTANCE_IMAGE_BUILD_DIR,
     RUN_INSTANCE_LOG_DIR,
 )

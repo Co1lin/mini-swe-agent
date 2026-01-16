@@ -4,8 +4,8 @@ from typing import Any, Dict, Tuple, List, Optional
 import json
 from unidiff import PatchSet
 
-from src.exec_spec import ExecMode
-from src.constants import (
+from swtbench.exec_spec import ExecMode
+from swtbench.constants import (
     APPLY_PATCH_FAIL,
     FAIL_TO_FAIL,
     FAIL_TO_PASS,
@@ -17,8 +17,8 @@ from src.constants import (
     TESTS_TIMEOUT,
     TestStatus,
 )
-from src.log_parsers import MAP_REPO_TO_PARSER, parse_log_reproduction_script
-from src.utils import get_log_dir, setup_logging
+from swtbench.log_parsers import MAP_REPO_TO_PARSER, parse_log_reproduction_script
+from swtbench.utils import get_log_dir, setup_logging
 
 # MARK: Utility functions
 def get_file_name_from_lp(x: str) -> str:

@@ -5,10 +5,10 @@ import re
 from datasets import load_dataset, Dataset, load_from_disk
 
 
-from src.constants import (
+from swtbench.constants import (
     RUN_INSTANCE_LOG_DIR,
 )
-from src.constants import SWEbenchInstance
+from swtbench.constants import SWEbenchInstance
 
 FILTER_FILE_LITE = "dataset/filter_cases_lite.txt"
 FILTER_FILE_FULL = "dataset/filter_cases_full.txt"
@@ -138,10 +138,15 @@ def load_swebench_dataset(name="princeton-nlp/SWE-bench", split="test", is_swt: 
     """
     transform = swe_to_swt_instance if not is_swt else swt_to_swt_instance
     # Load from local .json/.jsonl file
-    if name.endswith(".json") or name.endswith(".jsonl"):
+    if name.endswith(".json"):
         return [
             cast(SWEbenchInstance, transform(instance))
             for instance in json.load(open(name))
+        ]
+    elif name.endswith(".jsonl"):
+        return [
+            cast(SWEbenchInstance, transform(instance))
+            for instance in (json.loads(line) for line in open(name))
         ]
 
     # Load from Hugging Face Datasets

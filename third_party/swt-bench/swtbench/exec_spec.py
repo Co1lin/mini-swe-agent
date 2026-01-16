@@ -6,19 +6,19 @@ import re
 from dataclasses import dataclass, asdict
 from typing import Union, List, Optional, Literal
 
-from src.constants import (
+from swtbench.constants import (
     SWEbenchInstance,
     MAP_REPO_TO_INSTALL,
     MAP_VERSION_TO_INSTALL,
     MAP_REPO_TO_TEST_FRAMEWORK,
     USE_X86,
 )
-from src.dockerfiles import (
+from swtbench.dockerfiles import (
     get_dockerfile_base,
     get_dockerfile_env,
     get_dockerfile_instance,
 )
-from src.utils import (
+from swtbench.utils import (
     get_environment_yml_by_commit,
     get_requirements_by_commit, extract_changed_files,
 )

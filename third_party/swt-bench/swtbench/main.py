@@ -12,14 +12,14 @@ import resource
 from argparse import ArgumentParser
 from typing import List, Tuple, Optional, Dict, Literal
 
-from src.docker_utils import (
+from swtbench.docker_utils import (
     list_images,
     clean_images,
 )
 
-from src.dataset import get_dataset_from_preds, get_gold_predictions
-from src.utils import str2bool
-from run_evaluation import run_instances, make_run_report
+from swtbench.dataset import get_dataset_from_preds, get_gold_predictions
+from swtbench.utils import str2bool
+from swtbench.run_evaluation import run_instances, make_run_report
 
 def run(
         dataset_name: str,
@@ -57,7 +57,7 @@ def run(
     else:
         if predictions_path.endswith(".json"):
             with open(predictions_path, "r") as f:
-                predicted_tests = json.load(f)
+                predicted_tests = list(json.load(f).values())
         elif predictions_path.endswith(".jsonl"):
             with open(predictions_path, "r") as f:
                 predicted_tests = [json.loads(line) for line in f]

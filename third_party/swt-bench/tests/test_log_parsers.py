@@ -1,5 +1,5 @@
 import unittest
-from src.log_parsers import *
+from swtbench.log_parsers import *
 
 class TestDjangoLogParser(unittest.TestCase):
 

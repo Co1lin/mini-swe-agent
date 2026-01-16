@@ -14,12 +14,12 @@ from pathlib import Path
 from tqdm import tqdm
 from typing import List, Tuple, Optional
 
-from src.auxillary_src.extract_patches import remove_binary_diffs
-from src.constants import (
+from swtbench.auxillary_src.extract_patches import remove_binary_diffs
+from swtbench.constants import (
     APPLY_PATCH_FAIL,
     APPLY_PATCH_PASS
 )
-from src.docker_utils import (
+from swtbench.docker_utils import (
     remove_image,
     copy_to_container,
     exec_run_with_timeout,
@@ -28,11 +28,11 @@ from src.docker_utils import (
     should_remove,
     checked_exec_run,
 )
-from src.docker_build import start_container, BuildMode
-from src.test_spec import make_test_spec, TestSpec
-from src.utils import get_log_dir, get_test_directives, log_git_diff, setup_logging, link_image_build_dir, close_logger
-from src.exec_spec import ExecSpec, make_exec_spec, ExecMode
-from src.grading import report_results
+from swtbench.docker_build import start_container, BuildMode
+from swtbench.test_spec import make_test_spec, TestSpec
+from swtbench.utils import get_log_dir, get_test_directives, log_git_diff, setup_logging, link_image_build_dir, close_logger
+from swtbench.exec_spec import ExecSpec, make_exec_spec, ExecMode
+from swtbench.grading import report_results
 
 
 class EvaluationError(Exception):

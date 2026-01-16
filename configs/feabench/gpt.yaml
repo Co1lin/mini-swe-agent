@@ -16,32 +16,34 @@ agent:
 
     Failure to follow these rules will cause your response to be rejected.
   instance_template: |
-    <target>
-    {{ ar_target }}
-    </target>
-    <instructions>
-    ## Overview
-    Now, you are a Senior Software Architect tasked with onboarding onto an existing repository that you are unfamiliar with. You practice the "Active Reading" strategy: given a specific part of the codebase (the target of active reading), you do not just read it, but also investigate their purpose, execution, interactions with other files, etc., to form a comprehensive understanding of that part.
-    You consider the following topics when studying the given part:
-    - Functionality: What is the primary purpose of this target? What are its key responsibilities? What are the key constraints or invariants if any?
-    - Dependencies: What helper functions, classes, or constants does this target use? What are the notable cross-file dependencies?
-    - Usages and call sites: What other parts of the codebase use this target?
-    - Interactions: Combining the two points above, how does the given target interact with other parts of the codebase?
-    - Tests: How is this target tested? Are the test cases comprehensive enough?
-    - Execution: How is this target executed? What are the notable inputs, outputs, side effects, edge cases, error handling, etc.? When and how will it be executed considering the global execution chain?
-    - Structure: How is this target structured? What are the notable design patterns?
-    - Target-specific questions: You can come up with questions more specific to the target to better understand it.
+    <pr_description>
+    Consider the following PR description:
+    {{task}}
+    </pr_description>
 
-    IMPORTANT: This is an interactive process where you will think and issue ONE command, see its result, then think and issue your next command. By leveraging bash commands, you can:
-    - read the given part of the codebase itself
-    - retrieve any other parts of the codebase
-    - execute some existing code in the codebase or write new code to trigger certain parts to understand execution dynamics of the given part or verify your understanding
-    
+    <instructions>
+    # Task Instructions
+
+    ## Overview
+    You're a software engineer interacting continuously with a computer by submitting commands.
+    You'll be helping implement necessary changes to meet requirements in the PR description.
+    Your task is specifically to make changes to non-test files in the current directory in order to implement the feature requested in the PR description in a way that is general and consistent with the codebase.
+
+    IMPORTANT: This is an interactive process where you will think and issue ONE command, see its result, then think and issue your next command.
+
     For each response:
-    1. Include a THOUGHT section: You can generally follow these steps in your thought section: explain and verbalize the information you observe in the last step, reason about the current progress, and then plan the next steps
+    1. Include a THOUGHT section explaining your reasoning and what you're trying to accomplish
     2. Provide exactly ONE bash command to execute
 
-    You should create and incrementally edit a reading report file as you go. We expect it can be finally found at `/testbed/reading_report.md`. Do NOT repeat the target code in the reading report. Report your findings and understandings in a clear and concise manner.
+    ## Important Boundaries
+    - MODIFY: Regular source code files in /testbed (this is the working directory for all your subsequent commands)
+    - DO NOT MODIFY: Tests, configuration files (pyproject.toml, setup.cfg, etc.)
+
+    ## Recommended Workflow
+    1. Analyze the codebase by finding and reading relevant files
+    2. Edit the source code to implement the feature requested in the PR description
+    3. Verify your implementation works by drafting and running some tests
+    4. Test edge cases to ensure your implementation is robust
 
     ## Command Execution Rules
     You are operating in an environment where
@@ -116,6 +118,7 @@ agent:
     - You have a full Linux shell environment
     - Always use non-interactive flags (-y, -f) for commands
     - Avoid interactive tools like vi, nano, or any that require user input
+    - If a command isn't available, you can install it
 
     ## Useful Command Examples
 
@@ -154,17 +157,12 @@ agent:
     anything
     ```
 
-    ### Budget
-    Context Budget: You should avoid commands that produce very long outputs to use the context budget effectively. Use head, tail or sed to view a smaller number of lines selectively. Use grep to search and filter.
-    Time Budget: Commands taking more than 60 seconds to finish will timeout.
-    Action Budget: You only have up to 64 turns to complete your task, so try to be efficient.
-
     ## Submission
     When you've completed your work (reading, editing, testing), and cannot make further progress
     issue exactly the following command:
 
     ```bash
-    echo COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT && cat /testbed/reading_report.md
+    echo COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT && git add -A && git diff --cached
     ```
 
     This command will submit your work.
@@ -210,8 +208,8 @@ agent:
 
     If you have completed your assignment, please consult the first message about how to
     submit your solution (you will not be able to continue working on this task after that).
-  step_limit: 64
-  cost_limit: 1.
+  step_limit: 100
+  cost_limit: 3.
 
 environment:
   cwd: "/testbed"
@@ -226,8 +224,8 @@ environment:
   pull_timeout: 1200
 
 model:
-  model_name: vertex_ai/gemini-2.5-pro
+  model_name: openai/gpt-4.1-mini
   # model_kwargs:
-  #   reasoning_effort: low
+  #   reasoning_effort: minimal
     # temperature: 1.0
   cost_tracking: ignore_errors

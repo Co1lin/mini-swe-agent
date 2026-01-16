@@ -1,4 +1,4 @@
-from src.auxillary_src import extract_patches
+from swtbench.auxillary_src import extract_patches
 
 def test_extract_minimal_patch():
     patch_raw = """\

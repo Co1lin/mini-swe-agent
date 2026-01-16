@@ -1,6 +1,6 @@
 import os
 import json
-from src.exec_spec import ExecSpec
+from swtbench.exec_spec import ExecSpec
 
 
 if __name__ == "__main__":

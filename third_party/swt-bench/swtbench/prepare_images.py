@@ -3,10 +3,10 @@ import resource
 
 from argparse import ArgumentParser
 
-from src.docker_build import build_instance_images, BuildMode
-from src.docker_utils import list_images
-from src.test_spec import make_test_spec
-from src.utils import load_swebench_dataset, str2bool
+from swtbench.docker_build import build_instance_images, BuildMode
+from swtbench.docker_utils import list_images
+from swtbench.test_spec import make_test_spec
+from swtbench.utils import load_swebench_dataset, str2bool
 
 
 def filter_dataset_to_build(
