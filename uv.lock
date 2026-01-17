@@ -819,6 +819,59 @@ wheels = [
 ]
 
 [[package]]
+name = "feaswebench"
+version = "3.0.4"
+source = { editable = "third_party/fea-swe-bench" }
+dependencies = [
+    { name = "beautifulsoup4" },
+    { name = "chardet" },
+    { name = "datasets" },
+    { name = "docker" },
+    { name = "ghapi" },
+    { name = "gitpython" },
+    { name = "modal" },
+    { name = "pre-commit" },
+    { name = "python-dotenv" },
+    { name = "requests" },
+    { name = "rich" },
+    { name = "tenacity" },
+    { name = "tqdm" },
+    { name = "unidiff" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "anthropic", marker = "extra == 'inference'" },
+    { name = "beautifulsoup4" },
+    { name = "chardet" },
+    { name = "datasets" },
+    { name = "docker" },
+    { name = "flash-attn", marker = "extra == 'inference'" },
+    { name = "ghapi" },
+    { name = "gitpython" },
+    { name = "jedi", marker = "extra == 'inference'" },
+    { name = "modal" },
+    { name = "openai", marker = "extra == 'inference'" },
+    { name = "peft", marker = "extra == 'inference'" },
+    { name = "pre-commit" },
+    { name = "protobuf", marker = "extra == 'inference'" },
+    { name = "pytest", marker = "extra == 'test'" },
+    { name = "pytest-cov", marker = "extra == 'test'" },
+    { name = "python-dotenv" },
+    { name = "requests" },
+    { name = "rich" },
+    { name = "sentencepiece", marker = "extra == 'inference'" },
+    { name = "tenacity" },
+    { name = "tiktoken", marker = "extra == 'inference'" },
+    { name = "torch", marker = "extra == 'inference'" },
+    { name = "tqdm" },
+    { name = "transformers", marker = "extra == 'inference'" },
+    { name = "triton", marker = "extra == 'inference'" },
+    { name = "unidiff" },
+]
+provides-extras = ["inference", "test"]
+
+[[package]]
 name = "filelock"
 version = "3.20.2"
 source = { registry = "https://pypi.org/simple" }
@@ -1946,6 +1999,7 @@ dev = [
     { name = "datasets" },
     { name = "docker" },
     { name = "fastapi" },
+    { name = "feaswebench" },
     { name = "fire" },
     { name = "google-cloud-aiplatform" },
     { name = "ipython", version = "8.38.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
@@ -1975,6 +2029,7 @@ full = [
     { name = "datasets" },
     { name = "docker" },
     { name = "fastapi" },
+    { name = "feaswebench" },
     { name = "fire" },
     { name = "google-cloud-aiplatform" },
     { name = "ipython", version = "8.38.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
@@ -2007,6 +2062,7 @@ requires-dist = [
     { name = "datasets", marker = "extra == 'dev'" },
     { name = "docker", marker = "extra == 'dev'" },
     { name = "fastapi", marker = "extra == 'dev'" },
+    { name = "feaswebench", marker = "extra == 'dev'", editable = "third_party/fea-swe-bench" },
     { name = "fire", marker = "extra == 'dev'" },
     { name = "google-cloud-aiplatform", marker = "extra == 'dev'" },
     { name = "ipython", marker = "extra == 'dev'" },

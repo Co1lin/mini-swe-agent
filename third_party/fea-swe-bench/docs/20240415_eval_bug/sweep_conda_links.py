@@ -4,7 +4,7 @@ import subprocess
 """
 This script is used to sweep through a list of conda links and run the evaluation script on each one.
 
-It was originally invoked from the swebench/harness/ folder.
+It was originally invoked from the feaswebench/harness/ folder.
 """
 
 conda_links = [

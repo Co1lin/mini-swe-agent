@@ -30,6 +30,7 @@ if [ "$RUN_EVAL" = "true" ]; then
         --max_workers 12 \
         --run_id $RUN_ID
 
+    mv logs/run_evaluation/$RUN_ID $OUTPUT_DIR/logs
     mv *$RUN_ID.json $OUTPUT_DIR/
 
     uv run tools/eval_loc.py --pred_file $OUTPUT_DIR/preds.json 2>&1 | tee -a $OUTPUT_DIR/report.log
