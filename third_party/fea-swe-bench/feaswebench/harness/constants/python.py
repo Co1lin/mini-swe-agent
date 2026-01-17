@@ -660,7 +660,7 @@ SPECS_PYLINT = {
     k: {
         "python": "3.9",
         "packages": "requirements.txt",
-        "install": "python -m pip install -e .",
+        "install": "python -m pip install -e . --no-build-isolation",
         "test_cmd": TEST_PYTEST,
     }
     for k in [
