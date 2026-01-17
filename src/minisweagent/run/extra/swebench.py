@@ -17,6 +17,7 @@ import yaml
 from datasets import load_dataset
 from jinja2 import StrictUndefined, Template
 from rich.live import Live
+import docker
 
 from minisweagent import Environment
 from minisweagent.agents.default import DefaultAgent
@@ -85,6 +86,16 @@ class ProgressTrackingAgent(DefaultAgent):
 def get_swebench_docker_image_name(instance: dict) -> str:
     """Get the image name for a SWEBench instance."""
     image_name = instance.get("image_name", None)
+
+    if image_name is None:
+        client = docker.from_env()
+        try:
+            image_name_cached_by_eval = f'sweb.eval.x86_64.{instance["instance_id"]}:latest'
+            client.images.get(image_name_cached_by_eval)
+            image_name = image_name_cached_by_eval
+        except docker.errors.ImageNotFound:
+            pass
+
     if image_name is None:
         # Docker doesn't allow double underscore, so we replace them with a magic token
         iid = instance["instance_id"]

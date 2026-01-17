@@ -50,7 +50,10 @@ def get_predictions_from_file(predictions_path: str, dataset_name: str, split: s
         ]
     if predictions_path.endswith(".json"):
         with open(predictions_path, "r") as f:
-            return json.load(f)
+            ret = json.load(f)
+            if isinstance(ret, dict):
+                ret = list(ret.values())
+            return ret
     elif predictions_path.endswith(".jsonl"):
         with open(predictions_path, "r") as f:
             return [json.loads(line) for line in f]
