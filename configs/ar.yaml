@@ -40,6 +40,7 @@ agent:
     For each response:
     1. Include a THOUGHT section: You can generally follow these steps in your thought section: explain and verbalize the information you observe in the last step, reason about the current progress, and then plan the next steps
     2. Provide exactly ONE bash command to execute
+    3. HTML-like tags are used in this instruction to organize the information. You should NOT use such HTML tags in your response.
 
     You should create and incrementally edit a reading report file as you go. We expect it can be finally found at `/testbed/reading_report.md`. Do NOT repeat the target code in the reading report. Report your findings and understandings in a clear and concise manner.
 
@@ -164,7 +165,7 @@ agent:
     issue exactly the following command:
 
     ```bash
-    echo COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT && cat /testbed/reading_report.md
+    echo COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT && head -c 128k /testbed/reading_report.md
     ```
 
     This command will submit your work.
