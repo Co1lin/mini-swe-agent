@@ -9,14 +9,14 @@ HASH=${HASH:-e13b714}
 VERSION=${VERSION:-0}
 CONFIG=${CONFIG:-configs/testgen/host.yaml}
 WORKERS=${WORKERS:-12}
-RUN_EVAL=${RUN_EVAL:-true}
+RUN_EVAL=${RUN_EVAL:-false}
 
 REPO_HASH=${REPO}_${HASH}
-OUTPUT_DIR=evals/testgen/$REPO_HASH/$MS/v$VERSION
-RUN_ID=testgen_${REPO_HASH}_${MS}_v${VERSION}
+OUTPUT_DIR=evals/tdd/$REPO_HASH/$MS/v$VERSION
+RUN_ID=tdd_${REPO_HASH}_${MS}_v${VERSION}
 
 uv run mini-extra swebench -c $CONFIG --workers $WORKERS \
-    --subset ../repotune/data/eval/swt/$REPO.jsonl \
+    --subset ../repotune/data/eval/tdd/$REPO.jsonl \
     --model $MODEL \
     --model-class $MODEL_CLASS \
     --remote-port-selection $PORT \
@@ -24,7 +24,7 @@ uv run mini-extra swebench -c $CONFIG --workers $WORKERS \
 
 if [ "$RUN_EVAL" = "true" ]; then
     uv run python -m swtbench.main \
-        --dataset_name ../repotune/data/eval/swt/$REPO.jsonl \
+        --dataset_name ../repotune/data/eval/tdd/$REPO.jsonl \
         --predictions_path $OUTPUT_DIR/preds.json \
         --max_workers 16 \
         --run_id $RUN_ID \

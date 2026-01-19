@@ -20,7 +20,7 @@ environment:
   pull_timeout: 1200
 
 agent:
-  step_limit: 100
+  step_limit: 64
   cost_limit: 3.
   system_template: |
     You are a skilled test engineer who writes unit tests to reproduce software bugs.

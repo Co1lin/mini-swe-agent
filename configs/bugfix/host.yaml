@@ -209,7 +209,7 @@ agent:
 
     If you have completed your assignment, please consult the first message about how to
     submit your solution (you will not be able to continue working on this task after that).
-  step_limit: 100
+  step_limit: 64
   cost_limit: 3.
 
 environment:
@@ -237,6 +237,7 @@ model:
     top_p: 0.8
     top_k: 20
     repetition_penalty: 1.05
+    timeout: 3600
     drop_params: true
   cost_tracking: ignore_errors
 

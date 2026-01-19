@@ -134,6 +134,7 @@ class Stat:
                 results[status].update({
                     f'{k}_mean_': np.mean(v),
                     f'{k}_median_': np.median(v),
+                    f'{k}_p90_': np.percentile(v, 90),
                 })
         
         print("######## Usage results:")
@@ -152,6 +153,15 @@ class Stat:
                     'tot_all_tokens_mean_': 'All',
                 }[k]
                 print(f"{k_show}: {v:.1f}")
+        print(f'-------- Submitted/p90:')
+        for k, v in results['Submitted'].items():
+            if k.endswith('_p90_'):
+                k_show = {
+                    'num_turns_p90_': 'Turns',
+                    'tot_completion_tokens_p90_': 'Compl',
+                    'tot_all_tokens_p90_': 'All',
+                }[k]
+                print(f"{k_show}: {v:.1f}")
         print("########")
         
         return results
@@ -159,6 +169,21 @@ class Stat:
     def run(self) -> None:
         self.repetition()
         self.usage()
+    
+    def cost(self) -> None:
+        cost: list[float] = []
+        for inst_dir in self.eval_dir.iterdir():
+            if not inst_dir.is_dir():
+                continue
+            instance_id = inst_dir.name
+            inst_path = inst_dir / f'{instance_id}.traj.json'
+            if not (0 < inst_path.stat().st_size < 10 * 1024**2):
+                logger.info(f'skip due to size: {inst_path}')
+                continue
+            traj = self.get_traj(instance_id)
+            cost.append(traj['info']['model_stats']['instance_cost'])
+        
+        print(f'Total cost: {sum(cost)}')
 
 
 if __name__ == "__main__":
