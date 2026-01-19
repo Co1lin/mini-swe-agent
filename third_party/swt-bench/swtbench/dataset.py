@@ -1,5 +1,6 @@
 import json
 import pathlib
+from pathlib import Path
 from typing import Dict, cast
 import re
 from datasets import load_dataset, Dataset, load_from_disk
@@ -10,9 +11,11 @@ from swtbench.constants import (
 )
 from swtbench.constants import SWEbenchInstance
 
-FILTER_FILE_LITE = "dataset/filter_cases_lite.txt"
-FILTER_FILE_FULL = "dataset/filter_cases_full.txt"
-FILTER_FILE_VERIFIED = "dataset/filter_cases_verified.txt"
+current_file = Path(__file__).resolve()
+
+FILTER_FILE_LITE = str(current_file.parent.parent / "dataset/filter_cases_lite.txt")
+FILTER_FILE_FULL = str(current_file.parent.parent / "dataset/filter_cases_full.txt")
+FILTER_FILE_VERIFIED = str(current_file.parent.parent / "dataset/filter_cases_verified.txt")
 
 def _filter_cases(dataset="all"):
     filter_cases = set()

@@ -10,9 +10,11 @@ import numpy as np
 from constants import FAIL_TO_PASS, FAIL_TO_FAIL, PASS_TO_PASS
 import difflib
 
-FILTER_FILE_LITE = "dataset/filter_cases_lite.txt"
-FILTER_FILE_FULL = "dataset/filter_cases_full.txt"
-FILTER_FILE_VERIFIED = "dataset/filter_cases_verified.txt"
+current_file = Path(__file__).resolve()
+
+FILTER_FILE_LITE = str(current_file.parent.parent / "dataset/filter_cases_lite.txt")
+FILTER_FILE_FULL = str(current_file.parent.parent / "dataset/filter_cases_full.txt")
+FILTER_FILE_VERIFIED = str(current_file.parent.parent / "dataset/filter_cases_verified.txt")
 
 @functools.lru_cache(maxsize=1)
 def _filter_cases(dataset="all"):

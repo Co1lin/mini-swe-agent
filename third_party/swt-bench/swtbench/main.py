@@ -41,6 +41,7 @@ def run(
         skip_eval: bool = False,
         exec_mode: "ExecMode" = "unit_test",
         reproduction_script_name: Optional[str] = None,
+        skip_gold: bool = False,
     ):
     """
     Run evaluation harness for the given dataset and predictions.
@@ -57,7 +58,9 @@ def run(
     else:
         if predictions_path.endswith(".json"):
             with open(predictions_path, "r") as f:
-                predicted_tests = list(json.load(f).values())
+                predicted_tests = json.load(f)
+                if isinstance(predicted_tests, dict):
+                    predicted_tests = list(predicted_tests.values())
         elif predictions_path.endswith(".jsonl"):
             with open(predictions_path, "r") as f:
                 predicted_tests = [json.loads(line) for line in f]
@@ -77,11 +80,11 @@ def run(
     else:
         # build environment images + run instances
         # build_env_images(client, dataset, force_rebuild, max_workers)
-        run_instances(predicted_tests, dataset, compute_coverage, cache_level, clean, force_rebuild, max_workers, run_id, patch_types, timeout, client, build_mode, exec_mode, reproduction_script_name)
+        run_instances(predicted_tests, dataset, compute_coverage, cache_level, clean, force_rebuild, max_workers, run_id, patch_types, timeout, client, build_mode, exec_mode, reproduction_script_name=reproduction_script_name, skip_gold=skip_gold)
 
     # clean images + make final report
     clean_images(client, existing_images, cache_level, clean)
-    make_run_report(predicted_tests, full_dataset, client, run_id, exec_mode)
+    make_run_report(predicted_tests, full_dataset, client, run_id, exec_mode, skip_gold=skip_gold)
 
 
 if __name__ == "__main__":
@@ -133,6 +136,9 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--reproduction_script_name", type=str, default=None, help="Name of the reproduction script to run in exec_mode reproduction_script"
+    )
+    parser.add_argument(
+        "--skip_gold", type=str2bool, default=False, help="Skip gold test runs (gold_pre, gold_post) for faster evaluation. Coverage metrics will be unavailable."
     )
     args = parser.parse_args()
 

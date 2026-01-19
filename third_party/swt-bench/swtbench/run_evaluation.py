@@ -142,6 +142,7 @@ def run_instance(
         patch_types: List[str],
         timeout: int = None,
         build_mode: BuildMode = "api",
+        skip_gold: bool = False,
     ):
     """
     Run a single instance with the given prediction.
@@ -155,6 +156,7 @@ def run_instance(
         run_id (str): Run ID
         patch_types (List[str]): Patch types to extract
         timeout (int): Timeout for running tests
+        skip_gold (bool): Whether to skip gold test runs (gold_pre, gold_post)
     """
 
     exec_spec = test_spec.exec_spec
@@ -174,10 +176,18 @@ def run_instance(
         model_patch = extract_model_patch(exec_spec, pred["model_patch"], patch_types, build_mode=build_mode)
 
     if model_patch:
-        caching_log_dir = [False, False, True, True, True, True]
-        patch_ids = ["pred_pre__" + patch_id_base, "pred_post__" + patch_id_base, "gold_pre", "gold_post", "base_pre", "base_post"]
-        test_patches = [model_patch, model_patch, test_spec.golden_test_patch, test_spec.golden_test_patch, None, None]
-        code_patches = [None, test_spec.golden_code_patch, None, test_spec.golden_code_patch, None, test_spec.golden_code_patch]
+        if skip_gold:
+            # 4 runs: pred_pre, pred_post, base_pre, base_post (skip gold_pre, gold_post)
+            caching_log_dir = [False, False, True, True]
+            patch_ids = ["pred_pre__" + patch_id_base, "pred_post__" + patch_id_base, "base_pre", "base_post"]
+            test_patches = [model_patch, model_patch, None, None]
+            code_patches = [None, test_spec.golden_code_patch, None, test_spec.golden_code_patch]
+        else:
+            # 6 runs: pred_pre, pred_post, gold_pre, gold_post, base_pre, base_post
+            caching_log_dir = [False, False, True, True, True, True]
+            patch_ids = ["pred_pre__" + patch_id_base, "pred_post__" + patch_id_base, "gold_pre", "gold_post", "base_pre", "base_post"]
+            test_patches = [model_patch, model_patch, test_spec.golden_test_patch, test_spec.golden_test_patch, None, None]
+            code_patches = [None, test_spec.golden_code_patch, None, test_spec.golden_code_patch, None, test_spec.golden_code_patch]
 
         output_paths = []
         for cld, test_patch, code_patch, patch_id in zip(caching_log_dir, test_patches, code_patches, patch_ids):
@@ -255,6 +265,7 @@ def run_instances(
         build_mode: BuildMode,
         exec_mode: ExecMode,
         reproduction_script_name: Optional[str] = None,
+        skip_gold: bool = False,
     ):
     """
     Run all instances for the given predictions in parallel.
@@ -272,6 +283,7 @@ def run_instances(
         build_mode (BuildMode): Build mode
         exec_mode (ExecMode): Execution mode
         reproduction_script_name (Optional[str]): Name of the reproduction script
+        skip_gold (bool): Whether to skip gold test runs (gold_pre, gold_post)
     """
     test_specs = list(map(partial(make_test_spec, exec_mode=exec_mode, reproduction_script_name=reproduction_script_name), instances))
 
@@ -306,6 +318,7 @@ def run_instances(
                     patch_types,
                     timeout,
                     build_mode,
+                    skip_gold,
                 )
                 for test_spec in test_specs
             ]
@@ -347,6 +360,7 @@ def make_run_report(
         client: docker.DockerClient,
         run_id: str,
         exec_mode: ExecMode,
+        skip_gold: bool = False,
     ):
     """
     Make a final evaluation and run report of the instances that have been run.
@@ -357,10 +371,12 @@ def make_run_report(
         dataset (list): List of instances
         client (docker.DockerClient): Docker client
         run_id (str): Run ID
+        skip_gold (bool): Whether gold test runs were skipped
     """
     # instantiate sets to store IDs of different outcomes
     completed_ids = set()
     resolved_ids = set()
+    relaxed_resolved_ids = set()
     error_ids = set()
     unstopped_containers = set()
     unremoved_images = set()
@@ -398,21 +414,36 @@ def make_run_report(
             with model_patch_file.open() as f:
                 model_patch = f.read()
 
-            patch_ids = ["pred_pre__" + patch_id_base, "pred_post__" + patch_id_base, "gold_pre", "gold_post",
-                         "base_pre", "base_post"]
             model_test_directive_path = test_directive_id(get_test_directives(model_patch, instance["repo"]))
-            gold_test_directive_path = test_directive_id(
-                get_test_directives(instance["golden_test_patch"], instance["repo"]))
-            directive_paths = [gold_test_directive_path, gold_test_directive_path, model_test_directive_path,
-                               model_test_directive_path]
-            output_paths = (
-                    [
-                        get_log_dir(run_id, patch_id, instance_id) / "test_output.txt" for patch_id in patch_ids[:2]
-                    ] + [
-                        get_log_dir(patch_id, instance_id, directive_path) / "test_output.txt" for
-                        patch_id, directive_path in zip(patch_ids[2:], directive_paths)
-                    ]
-            )
+
+            if skip_gold:
+                # 4 paths: pred_pre, pred_post, base_pre, base_post (no gold)
+                patch_ids = ["pred_pre__" + patch_id_base, "pred_post__" + patch_id_base, "base_pre", "base_post"]
+                directive_paths = [model_test_directive_path, model_test_directive_path]
+                output_paths = (
+                        [
+                            get_log_dir(run_id, patch_id, instance_id) / "test_output.txt" for patch_id in patch_ids[:2]
+                        ] + [
+                            get_log_dir(patch_id, instance_id, directive_path) / "test_output.txt" for
+                            patch_id, directive_path in zip(patch_ids[2:], directive_paths)
+                        ]
+                )
+            else:
+                # 6 paths: pred_pre, pred_post, gold_pre, gold_post, base_pre, base_post
+                patch_ids = ["pred_pre__" + patch_id_base, "pred_post__" + patch_id_base, "gold_pre", "gold_post",
+                             "base_pre", "base_post"]
+                gold_test_directive_path = test_directive_id(
+                    get_test_directives(instance["golden_test_patch"], instance["repo"]))
+                directive_paths = [gold_test_directive_path, gold_test_directive_path, model_test_directive_path,
+                                   model_test_directive_path]
+                output_paths = (
+                        [
+                            get_log_dir(run_id, patch_id, instance_id) / "test_output.txt" for patch_id in patch_ids[:2]
+                        ] + [
+                            get_log_dir(patch_id, instance_id, directive_path) / "test_output.txt" for
+                            patch_id, directive_path in zip(patch_ids[2:], directive_paths)
+                        ]
+                )
             report = report_results(
                 patch_id_base,
                 run_id,
@@ -421,6 +452,7 @@ def make_run_report(
                 instance_id,
                 instance["repo"],
                 exec_mode,
+                skip_gold,
             )
 
         if report[instance_id]["resolved"]:
@@ -428,6 +460,8 @@ def make_run_report(
             resolved_ids.add(instance_id)
         else:
             unresolved_ids.add(instance_id)
+        if report[instance_id].get("relaxed_resolved"):
+            relaxed_resolved_ids.add(instance_id)
         if report[instance_id]["coverage_pred"] is not None:
             coverage_deltas.append(report[instance_id]["coverage_delta_pred"])
             coverages.append(report[instance_id]["coverage_pred"])
@@ -458,6 +492,7 @@ def make_run_report(
     print(f"Mean coverage: {coverage}")
     print(f"Mean coverage delta: {coverage_delta}")
     print(f"Instances resolved: {len(resolved_ids)}")
+    print(f"Instances relaxed_resolved: {len(relaxed_resolved_ids)}")
     print(f"Instances unresolved: {len(unresolved_ids)}")
     print(f"Instances with errors: {len(error_ids)}")
     print(f"Instances still running: {len(unstopped_containers)}")
@@ -468,6 +503,7 @@ def make_run_report(
         "total_instances": len(dataset),
         "completed_instances": len(completed_ids),
         "resolved_instances": len(resolved_ids),
+        "relaxed_resolved_instances": len(relaxed_resolved_ids),
         "unresolved_instances": len(unresolved_ids),
         "error_instances": len(error_ids),
         "Mean coverage": coverage,
@@ -475,6 +511,7 @@ def make_run_report(
         "unstopped_instances": len(unstopped_containers),
         "completed_ids": list(sorted(completed_ids)),
         "resolved_ids": list(sorted(resolved_ids)),
+        "relaxed_resolved_ids": list(sorted(relaxed_resolved_ids)),
         "unresolved_ids": list(sorted(unresolved_ids)),
         "error_ids": list(sorted(error_ids)),
         "unstopped_containers": list(sorted(unstopped_containers)),

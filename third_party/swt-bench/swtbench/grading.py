@@ -73,7 +73,8 @@ def get_logs_eval(
         # remove installation logs
     if "trace.py --count -C coverage.cover" in raw_content:
         # NOTE: does not work when not computing coverage
-        content = re.split(r"\n\+ python3 [^\n]*trace.py --count -C coverage.cover [^\n]*\n", raw_content, flags=re.MULTILINE)[1]
+        split_content = re.split(r"\n\+ python3 [^\n]*trace.py --count -C coverage.cover [^\n]*\n", raw_content, flags=re.MULTILINE)
+        content = split_content[1] if len(split_content) > 1 else raw_content
     else:
         content = raw_content
     # remove coverage dumps
@@ -221,15 +222,46 @@ def get_resolution_success(report_pred: dict[str, list[str]], report_base: dict[
 
     return added_p2f and not_added_x2f, len(pred_f2p.difference(base_f2p))
 
-    
+
+def get_relaxed_resolution_success(report_pred: dict[str, list[str]],
+                                   report_base: dict[str, list[str]]) -> Tuple[bool, int]:
+    """
+    Relaxed resolution check: only requires that agent added F2P tests.
+    Does not check for regressions (P2F or F2F changes).
+    Does not require pred_f2p to be superset of base_f2p.
+
+    Args:
+        report_pred: Evaluation report for prediction (agent's test)
+        report_base: Evaluation report for base (original tests)
+
+    Returns:
+        Tuple of (success, count of added F2P tests)
+    """
+    base_f2p = set(report_base[FAIL_TO_PASS])
+    pred_f2p = set(report_pred[FAIL_TO_PASS])
+
+    added_f2p_count = len(pred_f2p.difference(base_f2p))
+    return added_f2p_count > 0, added_f2p_count
+
 
 def extract_changed_lines_from_patch(patch: str) -> Tuple[List[Tuple[str, int]], List[Tuple[str, int]]]:
     # extract the lines that were changed by the patch
     # (lines that were removed, lines that were added)
-    patch = PatchSet(patch)
     added_lines = []
     removed_lines = []
-    for file in patch.modified_files + patch.added_files + patch.removed_files:
+    try:
+        # Try parsing as-is first, then with trailing newlines stripped
+        try:
+            parsed_patch = PatchSet(patch)
+        except Exception:
+            parsed_patch = PatchSet(patch.rstrip('\n'))
+    except Exception as e:
+        # If patch parsing fails, return empty lists
+        import sys
+        print(f"Warning: Could not parse patch: {e}", file=sys.stderr)
+        return (removed_lines, added_lines)
+
+    for file in parsed_patch.modified_files + parsed_patch.added_files + parsed_patch.removed_files:
         for hunk in file:
             for line in hunk:
                 if line.is_removed:
@@ -301,6 +333,7 @@ def get_pred_report(
     test_results: List[Dict[str, str]],
     coverage_results: List[Dict[str, List[Tuple[int,int]]]],
     include_tests_status: bool,
+    skip_gold: bool = False,
 ) -> dict[str, Any]:
     """
     Generate a report of model evaluation results from a prediction, task instance,
@@ -311,6 +344,7 @@ def get_pred_report(
         prediction (dict): prediction containing keys "instance_id", "model_name_or_path", and "model_patch"
         test_results (dict[str, str]): test results
         include_tests_status (bool): whether to include the status of each test in the returned report
+        skip_gold (bool): whether gold tests were skipped (4 results instead of 6)
     Returns:
         report (dict): report of metrics
     """
@@ -322,6 +356,7 @@ def get_pred_report(
             "patch_exists": False,
             "patch_successfully_applied": False,
             "resolved": False,
+            "relaxed_resolved": False,
             "coverage_pred": None,
             "coverage_gold": None,
             "coverage_base": None,
@@ -336,54 +371,69 @@ def get_pred_report(
 
     report_map[instance_id]["patch_successfully_applied"] = True
 
-    test_results_pred_pre, test_results_pred_post, test_results_golden_pre, test_results_golden_post, test_results_base_pre, test_results_base_post = test_results
-    coverage_results_pred_pre, coverage_results_pred_post, coverage_results_golden_pre, coverage_results_golden_post, coverage_results_base_pre, coverage_results_base_post = coverage_results
+    if skip_gold:
+        # 4 results: pred_pre, pred_post, base_pre, base_post
+        test_results_pred_pre, test_results_pred_post, test_results_base_pre, test_results_base_post = test_results
+        coverage_results_pred_pre, coverage_results_pred_post, coverage_results_base_pre, coverage_results_base_post = coverage_results
+        # Use empty dicts for gold results
+        test_results_golden_pre, test_results_golden_post = {}, {}
+        coverage_results_golden_pre, coverage_results_golden_post = {}, {}
+    else:
+        # 6 results: pred_pre, pred_post, gold_pre, gold_post, base_pre, base_post
+        test_results_pred_pre, test_results_pred_post, test_results_golden_pre, test_results_golden_post, test_results_base_pre, test_results_base_post = test_results
+        coverage_results_pred_pre, coverage_results_pred_post, coverage_results_golden_pre, coverage_results_golden_post, coverage_results_base_pre, coverage_results_base_post = coverage_results
 
     report_pred = get_eval_report(test_results_pred_pre, test_results_pred_post)
     report_base = get_eval_report(test_results_base_pre, test_results_base_post)
     report_gold = get_eval_report(test_results_golden_pre, test_results_golden_post)
 
-    ## get executable lines of the golden patch
-    removed_lines, added_lines = extract_changed_lines_from_patch(golden_code_patch)
-    executable_removed_lines = extract_executable_lines(removed_lines, [coverage_results_golden_pre, coverage_results_base_pre])
-    executable_added_lines = extract_executable_lines(added_lines, [coverage_results_golden_post, coverage_results_base_post])
+    # Skip coverage calculation when gold tests are skipped (coverage metrics are unavailable)
+    if not skip_gold:
+        ## get executable lines of the golden patch
+        removed_lines, added_lines = extract_changed_lines_from_patch(golden_code_patch)
+        executable_removed_lines = extract_executable_lines(removed_lines, [coverage_results_golden_pre, coverage_results_base_pre])
+        executable_added_lines = extract_executable_lines(added_lines, [coverage_results_golden_post, coverage_results_base_post])
 
-    ## compute relevant coverage
-    coverage_pred_removed = get_restricted_coverage(executable_removed_lines, coverage_results_pred_pre)
-    coverage_pred_added = get_restricted_coverage(executable_added_lines, coverage_results_pred_post)
+        ## compute relevant coverage
+        coverage_pred_removed = get_restricted_coverage(executable_removed_lines, coverage_results_pred_pre)
+        coverage_pred_added = get_restricted_coverage(executable_added_lines, coverage_results_pred_post)
 
-    coverage_gold_removed = get_restricted_coverage(executable_removed_lines, coverage_results_golden_pre)
-    coverage_gold_added = get_restricted_coverage(executable_added_lines, coverage_results_golden_post)
+        coverage_gold_removed = get_restricted_coverage(executable_removed_lines, coverage_results_golden_pre)
+        coverage_gold_added = get_restricted_coverage(executable_added_lines, coverage_results_golden_post)
 
-    coverage_base_removed = get_restricted_coverage(executable_removed_lines, coverage_results_base_post)
-    coverage_base_added = get_restricted_coverage(executable_added_lines, coverage_results_base_post)
+        coverage_base_removed = get_restricted_coverage(executable_removed_lines, coverage_results_base_post)
+        coverage_base_added = get_restricted_coverage(executable_added_lines, coverage_results_base_post)
 
-    n_executable_lines = len(executable_removed_lines) + len(executable_added_lines)
+        n_executable_lines = len(executable_removed_lines) + len(executable_added_lines)
 
-    if n_executable_lines > 0:
-        n_coverage_pred = count_covered_lines(coverage_pred_removed, coverage_pred_added)
-        n_coverage_gold = count_covered_lines(coverage_gold_removed, coverage_gold_added)
-        n_coverage_base = count_covered_lines(coverage_base_removed, coverage_base_added)
+        if n_executable_lines > 0:
+            n_coverage_pred = count_covered_lines(coverage_pred_removed, coverage_pred_added)
+            n_coverage_gold = count_covered_lines(coverage_gold_removed, coverage_gold_added)
+            n_coverage_base = count_covered_lines(coverage_base_removed, coverage_base_added)
 
-        coverage_delta_pred_removed = get_coverage_delta(executable_removed_lines, coverage_base_removed, coverage_pred_removed)
-        coverage_delta_pred_added = get_coverage_delta(executable_added_lines, coverage_base_added, coverage_pred_added)
+            coverage_delta_pred_removed = get_coverage_delta(executable_removed_lines, coverage_base_removed, coverage_pred_removed)
+            coverage_delta_pred_added = get_coverage_delta(executable_added_lines, coverage_base_added, coverage_pred_added)
 
-        coverage_delta_gold_removed = get_coverage_delta(executable_removed_lines, coverage_base_removed, coverage_gold_removed)
-        coverage_delta_gold_added = get_coverage_delta(executable_added_lines, coverage_base_added, coverage_gold_added)
+            coverage_delta_gold_removed = get_coverage_delta(executable_removed_lines, coverage_base_removed, coverage_gold_removed)
+            coverage_delta_gold_added = get_coverage_delta(executable_added_lines, coverage_base_added, coverage_gold_added)
 
-        n_coverage_delta_gold = count_covered_lines(coverage_delta_gold_removed, coverage_delta_gold_added)
-        n_coverage_delta_pred = count_covered_lines(coverage_delta_pred_removed, coverage_delta_pred_added)
+            n_coverage_delta_gold = count_covered_lines(coverage_delta_gold_removed, coverage_delta_gold_added)
+            n_coverage_delta_pred = count_covered_lines(coverage_delta_pred_removed, coverage_delta_pred_added)
 
-        report_map[instance_id]["coverage_pred"] = n_coverage_pred / n_executable_lines
-        report_map[instance_id]["coverage_gold"] = n_coverage_gold / n_executable_lines
-        report_map[instance_id]["coverage_base"] = n_coverage_base / n_executable_lines
+            report_map[instance_id]["coverage_pred"] = n_coverage_pred / n_executable_lines
+            report_map[instance_id]["coverage_gold"] = n_coverage_gold / n_executable_lines
+            report_map[instance_id]["coverage_base"] = n_coverage_base / n_executable_lines
 
-        report_map[instance_id]["coverage_delta_pred"] = n_coverage_delta_pred / n_executable_lines
-        report_map[instance_id]["coverage_delta_gold"] = n_coverage_delta_gold / n_executable_lines
+            report_map[instance_id]["coverage_delta_pred"] = n_coverage_delta_pred / n_executable_lines
+            report_map[instance_id]["coverage_delta_gold"] = n_coverage_delta_gold / n_executable_lines
 
     success, added_f2p = get_resolution_success(report_pred, report_base)
     report_map[instance_id]["resolved"] = success
     report_map[instance_id]["added_f2p"] = added_f2p
+
+    # Relaxed resolution: only checks if agent added F2P tests (no regression check)
+    relaxed_success, _ = get_relaxed_resolution_success(report_pred, report_base)
+    report_map[instance_id]["relaxed_resolved"] = relaxed_success
 
     if include_tests_status:
         report_map[instance_id]["tests_base"] = report_base  # type: ignore
@@ -401,6 +451,7 @@ def report_results(
         instance_id: str,
         repo: str,
         exec_mode: ExecMode,
+        skip_gold: bool = False,
 ) -> dict[str, dict[str, bool]]:
     log_dir = get_log_dir(run_id, patch_id, instance_id)
     logger, report_path = setup_logging(log_dir, instance_id)
@@ -426,6 +477,7 @@ def report_results(
             test_results=test_results,
             coverage_results=coverage_results,
             include_tests_status=True,
+            skip_gold=skip_gold,
         )
     else:
         report = get_pred_report(
@@ -435,6 +487,7 @@ def report_results(
             test_results=None,
             coverage_results=None,
             include_tests_status=True,
+            skip_gold=skip_gold,
         )
     logger.info(
         f"report: {report}\n"
