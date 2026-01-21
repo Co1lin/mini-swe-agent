@@ -159,7 +159,10 @@ def get_outer_functions(text):
     Returns:
         list: A list of function names.
     """
-    tree = ast.parse(text)
+    try:
+        tree = ast.parse(text)
+    except:
+        return []
 
     functions = []
 

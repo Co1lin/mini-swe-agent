@@ -33,6 +33,11 @@ class FixPreds:
         logger.info(f"Removed: {len(preds) - len(preds_new)}")
         Path(self.input_path).write_text(json.dumps(preds_new, indent=2))
     
+    def show_valid(self) -> None:
+        preds = json.loads(Path(self.input_path).read_text())
+        preds_new = {k: v for k, v in preds.items() if v["model_patch"].startswith('diff --git')}
+        print(' '.join([k for k in preds_new]))
+    
     def remove_large(self) -> None:
         shutil.copyfile(self.input_path, self.backup_path)
         with self.input_path.open() as f:

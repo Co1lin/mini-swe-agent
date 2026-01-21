@@ -23,6 +23,9 @@ uv run mini-extra swebench -c $CONFIG --workers $WORKERS \
     --output $OUTPUT_DIR
 
 if [ "$RUN_EVAL" = "true" ]; then
+    docker ps -aq --filter "name=$RUN_ID" | xargs -r docker rm -f
+    sleep 3s
+
     uv run python -m feaswebench.harness.run_evaluation \
         --dataset_name /home/colin/code/repotune/data/eval/fea/$REPO.jsonl \
         --predictions_path $OUTPUT_DIR/preds.json \

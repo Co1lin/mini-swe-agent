@@ -274,6 +274,7 @@ def main(
 
     if remote_port_selection > 0:
         host_idx = 2 if 'host2' in str(config_spec) else 1
+        logger.info(f"{config_spec = } , {host_idx = }")
         remote_port = {
             1: {
                 8001: 52951,

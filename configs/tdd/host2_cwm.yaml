@@ -2,14 +2,16 @@
 model:
   model_name: openai/bugfix_swesmith_all_qwen34i_32k_3ep_v0_ckpt2242
   model_kwargs:
-    api_base: http://93.91.156.83:52951/v1 # 8001
+    api_base: http://93.91.156.83:50120/v1 # 8001
     api_key: colin7d17d1
     # temperature: 0.0
     temperature: 1.0
     top_p: 0.8
     top_k: 20
     repetition_penalty: 1.05
-    drop_params: true
+    chat_template_kwargs:
+      enable_thinking: false
+    drop_params: false
   cost_tracking: ignore_errors
 
 environment:

@@ -208,7 +208,7 @@ agent:
 
     If you have completed your assignment, please consult the first message about how to
     submit your solution (you will not be able to continue working on this task after that).
-  step_limit: 100
+  step_limit: 64
   cost_limit: 3.
 
 environment:
@@ -229,7 +229,7 @@ model:
     api_base: http://93.91.156.83:52951/v1 # 8001
     # api_base: http://93.91.156.83:46171/v1 # 8002
     # api_base: http://93.91.156.83:42452/v1 # 8003
-    api_key: colin
+    api_key: colin7d17d1
     # temperature: 0.0
     temperature: 1.0
     top_p: 0.8

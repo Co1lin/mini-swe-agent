@@ -521,6 +521,7 @@ def build_container(
             command="tail -f /dev/null",
             nano_cpus=nano_cpus,
             platform=test_spec.platform,
+            mem_limit="8g",
         )
         logger.info(f"Container for {test_spec.instance_id} created: {container.id}")
         return container

@@ -23,6 +23,9 @@ uv run mini-extra swebench -c $CONFIG --subset verified --split test --workers $
     --output $OUTPUT_DIR
 
 if [ "$RUN_EVAL" = "true" ]; then
+    docker ps -aq --filter "name=$RUN_ID" | xargs -r docker rm -f
+    sleep 3s
+
     uv run python -m swebench.harness.run_evaluation \
         --dataset_name princeton-nlp/SWE-bench_Verified \
         --predictions_path $OUTPUT_DIR/preds.json \
