@@ -15,8 +15,11 @@ REPO_HASH=${REPO}_${HASH}
 OUTPUT_DIR=evals/bugfix/$REPO_HASH/$MS/v$VERSION
 RUN_ID=bugfix_${REPO_HASH}_${MS}_v${VERSION}
 
-uv run mini-extra swebench -c $CONFIG --subset verified --split test --workers $WORKERS \
-    --instance-ids-paths /home/colin/code/repotune/data/val/$REPO_HASH/sbv_${REPO_HASH}_ids.json \
+wc -l /home/colin/code/repotune/data/eval/sbv/$REPO.jsonl
+sleep 3s
+
+uv run mini-extra swebench -c $CONFIG --workers $WORKERS \
+    --subset /home/colin/code/repotune/data/eval/sbv/$REPO.jsonl \
     --model $MODEL \
     --model-class $MODEL_CLASS \
     --remote-port-selection $PORT \
