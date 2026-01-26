@@ -75,6 +75,7 @@ dev = [
     "docker",
     "fire",
     "loguru",
+    "natsort",
     "swebench",
     "swesmith",
     "tddbench",

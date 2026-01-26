@@ -15,8 +15,14 @@ REPO_HASH=${REPO}_${HASH}
 OUTPUT_DIR=evals/fea/$REPO_HASH/$MS/v$VERSION
 RUN_ID=fea_${REPO_HASH}_${MS}_v${VERSION}
 
+# /home/colin/code/repotune/data/eval/fea/$REPO.jsonl
+DS=/home/tianjun/fea-bench/feabench-data/cleaned/$REPO.jsonl
+
+sleep 3s
+wc -l $DS
+
 uv run mini-extra swebench -c $CONFIG --workers $WORKERS \
-    --subset /home/colin/code/repotune/data/eval/fea/$REPO.jsonl \
+    --subset $DS \
     --model $MODEL \
     --model-class $MODEL_CLASS \
     --remote-port-selection $PORT \
@@ -27,7 +33,7 @@ if [ "$RUN_EVAL" = "true" ]; then
     sleep 3s
 
     uv run python -m feaswebench.harness.run_evaluation \
-        --dataset_name /home/colin/code/repotune/data/eval/fea/$REPO.jsonl \
+        --dataset_name $DS \
         --predictions_path $OUTPUT_DIR/preds.json \
         --timeout 600 \
         --max_workers 12 \

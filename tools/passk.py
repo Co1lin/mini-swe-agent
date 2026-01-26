@@ -50,7 +50,7 @@ def main(
             logger.warning(f'No eval result found for {eval_version_dir}')
 
     metrics = {'num_versions': num_versions}
-    for k in [1, 3, 6]:
+    for k in range(1, num_versions + 1):
         for id, passinfo in id_to_pass.items():
             passinfo[f'pass@{k}'] = pass_at_k(num_versions, passinfo['count'], k)
         metrics[f'pass@{k}'] = np.mean([passinfo[f'pass@{k}'] for passinfo in id_to_pass.values()])

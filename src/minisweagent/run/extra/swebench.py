@@ -273,7 +273,12 @@ def main(
         config.setdefault("model", {})["model_class"] = model_class
 
     if remote_port_selection > 0:
-        host_idx = 2 if 'host2' in str(config_spec) else 1
+        if 'host2' in str(config_spec):
+            host_idx = 2
+        elif 'host3' in str(config_spec):
+            host_idx = 3
+        else:
+            host_idx = 1
         logger.info(f"{config_spec = } , {host_idx = }")
         remote_port = {
             1: {
@@ -287,7 +292,12 @@ def main(
                 8002: 42381,
                 8003: 51193,
                 8004: 56207,
-            }
+            },
+            3: {
+                8001: 53331,
+                8002: 42883,
+                8003: 57434,
+            },
         }[host_idx][remote_port_selection]
         config['model']['model_kwargs']['api_base'] = f"http://93.91.156.83:{remote_port}/v1"
     logger.info(f"{config['model'] = }")
