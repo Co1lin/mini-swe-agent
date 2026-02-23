@@ -273,10 +273,17 @@ def main(
         config.setdefault("model", {})["model_class"] = model_class
 
     if remote_port_selection > 0:
+        ip_addr = '93.91.156.83'
         if 'host2' in str(config_spec):
             host_idx = 2
         elif 'host3' in str(config_spec):
             host_idx = 3
+        elif 'host4' in str(config_spec):
+            host_idx = 4
+            ip_addr = '93.91.156.87'
+        elif 'host5' in str(config_spec):
+            host_idx = 5
+            ip_addr = '93.91.156.87'
         else:
             host_idx = 1
         logger.info(f"{config_spec = } , {host_idx = }")
@@ -298,8 +305,20 @@ def main(
                 8002: 42883,
                 8003: 57434,
             },
+            4: {
+                8001: 50581,
+                8002: 42108,
+                8003: 58657,
+                8004: 55871,
+            },
+            5: {
+                8001: 42196,
+                8002: 58158,
+                8003: 46153,
+                8004: 55084,
+            },
         }[host_idx][remote_port_selection]
-        config['model']['model_kwargs']['api_base'] = f"http://93.91.156.83:{remote_port}/v1"
+        config['model']['model_kwargs']['api_base'] = f"http://{ip_addr}:{remote_port}/v1"
     logger.info(f"{config['model'] = }")
 
     progress_manager = RunBatchProgressManager(len(instances), output_path / f"exit_statuses_{time.time()}.yaml")

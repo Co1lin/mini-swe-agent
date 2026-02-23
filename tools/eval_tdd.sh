@@ -26,7 +26,7 @@ if [ "$RUN_EVAL" = "true" ]; then
     docker ps -aq --filter "name=$RUN_ID" | xargs -r docker rm -f
     sleep 3s
 
-    uv run python -m tddbench.harness.run_evaluation \
+    timeout 3h uv run python -m tddbench.harness.run_evaluation \
         --dataset_name ../repotune/data/eval/tdd/$REPO.jsonl \
         --predictions_path $OUTPUT_DIR/preds.json \
         --max_workers 16 \
